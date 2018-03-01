@@ -3,6 +3,7 @@
 Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Współbieżne w roku akademickim 2017/2018.
 
 **Student:** Mariusz Mazepa
+
 **Nr indeksu:** 235371
 
 | Laboratorium | Zadanie | Wynik           |
