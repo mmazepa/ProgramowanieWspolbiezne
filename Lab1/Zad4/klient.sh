@@ -3,30 +3,27 @@ printf "\n"
 printf "  KLIENT\n"
 echo "  --------------------------"
 
-if [ -f dane ] ; then
+if [ -s dane ] ; then
     rm dane
 fi
 
-if [ -f wynik ] ; then
+if [ -s wynik ] ; then
     rm wynik
 fi
 
 echo "  Wielomian:    x^2 + 4x + 4"
 printf "  Podaj liczbę: "
-read -r liczba
+read liczba
 echo $liczba > dane
 
 while true
 	do
 		if [ -s wynik ]
-			then
-				#plik istnieje i nie jest pusty
-				read rezultat < wynik
-				rm wynik
-				echo "  Wynik:        $rezultat"
-				break
-			#else
-				#plik nie istnieje lub jest pusty
+		then
+			read rezultat < wynik
+			rm wynik
+			echo "  Wynik:        $rezultat"
+			break
 		fi
 	done
 
