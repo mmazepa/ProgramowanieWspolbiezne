@@ -1,5 +1,5 @@
 #!/bin/bash
 echo "[COMPILE]: Kompilowanie plików producent.c i konsument.c"
-gcc -o producent producent.c
-gcc -o konsument konsument.c
+gcc -o bin/producent producent.c
+gcc -o bin/konsument konsument.c
 exit 0
