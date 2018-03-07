@@ -31,6 +31,12 @@ void beginning()
 	puts("");
 }
 
+void ending()
+{
+  makeLine();
+	puts("");
+}
+
 int main (void)
 {
   beginning();
@@ -39,7 +45,6 @@ int main (void)
 	puts("  ...");
   //...
 
-  makeLine();
-	puts("");
+  ending();
 	return 0;
 }

@@ -1,15 +1,19 @@
 ## Programowanie Współbieżne 2017/2018
 
-Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Współbieżne w roku akademickim 2017/2018.
+Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Współbieżne w roku akademickim 2017/2018. Wszystkie zadania zamieszczone w niniejszym repozytorium zostały wykonane samodzielnie.
 
-**Student:** Mariusz Mazepa
+## Student
 
-**Nr indeksu:** 235371
+| Imię    | Nazwisko | Nr indeksu |
+|---------|----------|------------|
+| Mariusz | Mazepa   | 235371     |
 
-| Laboratorium | Zadanie | Wynik           |
-|--------------|---------|-----------------|
-| Lab1         | Zad4    | + Pliki w bashu |
-| Lab2         | Zad2    |                 |
-| Lab3         |         |                 |
-| Lab4         |         |                 |
-| Lab5         |         |                 |
+## Laboratorium
+
+| Laboratorium | Zadanie | Deadline   | Data oddania | Wynik           |
+|--------------|---------|------------|--------------|-----------------|
+| Lab1         | Zad4    | 08.03.2018 | 01.03.2018   | + Pliki w bashu |
+| Lab2         | Zad2    | 15.03.2018 |              |                 |
+| Lab3         | Zad3    | 22.03.2018 |              |                 |
+| Lab4         |         |            |              |                 |
+| Lab5         |         |            |              |                 |

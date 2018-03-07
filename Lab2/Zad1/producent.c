@@ -30,6 +30,12 @@ void beginning()
 	puts("");
 }
 
+void ending()
+{
+  makeLine();
+	puts("");
+}
+
 int main (void)
 {
   beginning();
@@ -42,7 +48,6 @@ int main (void)
 
   printf("\n  WPISANO:\n  %s\n", &string);
 
-  makeLine();
-	puts("");
+  ending();
 	return 0;
 }
