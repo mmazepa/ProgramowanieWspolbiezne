@@ -3,3 +3,4 @@ syntax: glob
 *.txt
 bin/
 */bin/*
+lockfile
