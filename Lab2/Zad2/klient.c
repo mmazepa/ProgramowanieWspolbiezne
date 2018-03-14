@@ -1,6 +1,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
 
 #define ROZMIAR_BUFORA 512
 #define TRUE 1
@@ -20,6 +21,7 @@ void sendMessage()
 {
 	int dane;
 	char bufor[ROZMIAR_BUFORA];
+  memset(&bufor[0], 0, sizeof(bufor));
 	char znak[1];
 	int licznik = 0;
 
@@ -37,7 +39,7 @@ void sendMessage()
 			read(0,znak,1);
 			if(znak[0] == 27)
       {
-				licznik = sprintf(output, "%s:\n%s", nazwa_uzytkownika, bufor);
+				licznik = sprintf(output, "%s:\n%s ", nazwa_uzytkownika, bufor);
 				write(dane, output, licznik);
 				break;
 			}
@@ -50,16 +52,18 @@ void sendMessage()
 // ODEBRANIE WIADOMOŚCI ZWROTNEJ OD SERWERA
 void getMessage()
 {
-	int wyniki;
+	int wyniki = 0;
 	char bufor[ROZMIAR_BUFORA];
+  memset(&bufor[0], 0, sizeof(bufor));
 
 	while((wyniki = open("wyniki.txt", O_RDWR)) < 0) {}
 
 	if(wyniki != 0)
 	{
 		while(read(wyniki,bufor,ROZMIAR_BUFORA) < 1) {}
-		printf("SERWER WYSŁAŁ WIADOMOŚĆ:\n%s", bufor);
+		printf("\nSERWER WYSŁAŁ WIADOMOŚĆ:\n%s", bufor);
 		close(wyniki);
+    printf("\n");
 	}
 }
 
