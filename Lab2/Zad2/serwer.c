@@ -32,8 +32,8 @@ void sendMessage()
 
 	if(wyniki != 0)
 	{
-		printf("SERWER - NAPISZ WIADOMOSC ZWROTNA DLA KLIENTA:\n");
-		while(1)
+		printf("WIADOMOŚĆ ZWROTNA DLA KLIENTA:\n");
+		while(TRUE)
 		{
 			read(0,znak,1);
 
@@ -59,7 +59,11 @@ void disconnect()
 // FUNKCJA GŁÓWNA
 int main()
 {
-	printf("KOMUNIKATOR TEKSTOWY - SERWER\n");
+  printf("\n");
+  printf("┌─┐┌─┐┬─┐┬ ┬┌─┐┬─┐\n");
+  printf("└─┐├┤ ├┬┘│││├┤ ├┬┘\n");
+  printf("└─┘└─┘┴└─└┴┘└─┘┴└─\n");
+  printf("\n");
 
 	while(TRUE)
 	{

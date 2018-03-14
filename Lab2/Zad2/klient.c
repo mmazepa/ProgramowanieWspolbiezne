@@ -37,7 +37,7 @@ void sendMessage()
 			read(0,znak,1);
 			if(znak[0] == 27)
       {
-				counter = sprintf(output, "%s:\n%s" , uzytkownik, bufor);
+				counter = sprintf(output, "%s:\n%s", uzytkownik, bufor);
 				write(dane, output, counter);
 				break;
 			}
@@ -58,7 +58,7 @@ void getMessage()
 	if(wyniki != 0)
 	{
 		while(read(wyniki,bufor,512) < 1) {}
-		printf("WIADOMOSC Z SERWERA:\n%s", bufor);
+		printf("\nSERWER WYSŁAŁ WIADOMOŚĆ:\n%s", bufor);
 		close(wyniki);
 	}
 }
@@ -75,14 +75,18 @@ int main(int argc, char *argv[])
 	char uzytkownik[100];
 	getlogin_r(uzytkownik, 100);
 
-	printf("Witaj w komunikatorze tekstowym - KLIENT\n");
-	printf("(Zalogowany jako:%s)\n" , uzytkownik);
+  printf("\n");
+  printf("┬┌─┬  ┬┌─┐┌┐┌┌┬┐\n");
+  printf("├┴┐│  │├┤ │││ │ \n");
+  printf("┴ ┴┴─┘┴└─┘┘└┘ ┴ \n");
+  printf("\n");
+	printf("TWOJA NAZWA: %s\n", uzytkownik);
 
-		connect();
-		sendMessage();
-		getMessage();
-		disconnect();
+	connect();
+	sendMessage();
+	getMessage();
+	disconnect();
 
-    getchar();
-    return 0;
+  getchar();
+  return 0;
 }
