@@ -1,60 +1,43 @@
 #!/bin/bash
-clear
-echo ""
-echo "  ┌─┐┌─┐┬ ┬┬┌─┌─┐ ┬ ┌─┐┬ ┬"
-echo "  └─┐┌─┘│ │├┴┐├─┤ │ └─┐├─┤"
-echo "  └─┘└─┘└─┘┴ ┴┴ ┴└┘o└─┘┴ ┴"
-echo ""
+declare -i ilosc_plikow
+ilosc_plikow=0
+CHILDREN=
 
-echo "  Nazwa skryptu:          $0"
-echo "  Folder do przeszukania: $1"
-echo "  Plik do znalezienia:    $2"
-echo ""
-
-declare -i x
-dir=$(pwd)
-if [ -s "$1" ]; then
-  path_to_file="$dir/$1"
-  cd $path_to_file
-  step=0
-  for i in $(ls); do
-    if [ "$i" == "$2" ] ; then
-      let x+=1
-      echo "  [$x]: $(pwd)"
-    else
-      while [[ -s $i ]]; do
-        step+=1
-        # ls
-        # echo $step
-        if [[ -s $i ]]; then
-          cd $i
-        fi
-        for z in $(ls); do
-          if [[ "$z" == "$2" ]]; then
-            let x+=1
-            echo "  [$x]: $(pwd)"
-          fi
-          # for i in $(ls); do
-          #   sleep 0
-          # done
-          if [[ $i == $2 ]]; then
-            let x+=1
-            echo "  [$x]: $(pwd)" # brak wydruku (???)
-          fi
-        done
-      done
-    fi
-  done
+if [ "$#" -lt 2 ]; then
+	echo "Za mało argmentów, prawidłowy format to ./szukaj.sh [katalog] [plik]."
+	exit
 else
-  echo "  Podaj prawidłowy parametr."
+	if [ ! -d "$1" ]; then
+		echo "'$1' nie jest katalogiem"
+		exit
+	fi
 fi
-echo ""
 
-if [ -z $3 ] ; then
-  if [ -z $x ] ; then
-    echo "  [WYNIK]: Niestety niczego nie znaleziono."
-  else
-    echo "  [WYNIK]: Plik/katalog został znaleziony ($x razy)."
-  fi
+for item in $1/*; do
+	if [ -d "$item" ]; then
+		"$0" "$item" "$2" "$$" &
+		CHILDREN+=("$!")
+	elif [ -f "$item" ]; then
+		if [ $(basename $item) == "$2" ]; then
+			echo "[$2]: $1"
+			ilosc_plikow=$((ilosc_plikow+1))
+		fi
+	fi
+done
+
+for i in "${CHILDREN[@]}"; do
+	if [ "$i" ]; then
+		wait "$i"
+		ilosc_plikow=$((ilosc_plikow+$?))
+	fi
+done
+
+if [ -z "$3" ]; then
+	if [ "$ilosc_plikow" -eq 0 ]; then
+		echo "Nie znaleziono żadnego pliku."
+	else
+		echo "Znalezionych plików: $ilosc_plikow"
+	fi
 fi
-echo ""
+
+exit "$ilosc_plikow"
