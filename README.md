@@ -15,5 +15,5 @@ Repozytorium do przechowywania plik√≥w na potrzeby przedmiotu Programowanie Wsp√
 | Lab1         | Zad4    | 08.03.2018 | 01.03.2018   | + Pliki w bashu |
 | Lab2         | Zad2    | 15.03.2018 |              |                 |
 | Lab3         | Zad3    | 22.03.2018 |              |                 |
-| Lab4         |         |            |              |                 |
+| Lab4         | Zad2    | 29.03.2018 |              |                 |
 | Lab5         |         |            |              |                 |
