@@ -21,28 +21,28 @@ void sendMessage()
 	int dane;
 	char bufor[ROZMIAR_BUFORA];
 	char znak[1];
-	int counter = 0;
+	int licznik = 0;
 
-	char uzytkownik[100];
-	getlogin_r(uzytkownik, 100);
+	char nazwa_uzytkownika[100];
+	getlogin_r(nazwa_uzytkownika, 100);
 	char output[1024];
 
 	while((dane = open("dane.txt", O_RDWR|O_CREAT|O_APPEND, 0711)) < 0) {}
 
 	if(dane != 0)
 	{
-		printf("\n%s:\n", uzytkownik);
+		printf("\n%s:\n", nazwa_uzytkownika);
 		while(TRUE)
 		{
 			read(0,znak,1);
 			if(znak[0] == 27)
       {
-				counter = sprintf(output, "%s:\n%s", uzytkownik, bufor);
-				write(dane, output, counter);
+				licznik = sprintf(output, "%s:\n%s", nazwa_uzytkownika, bufor);
+				write(dane, output, licznik);
 				break;
 			}
-			bufor[counter] = znak[0];
-			counter++;
+			bufor[licznik] = znak[0];
+			licznik++;
 		}
 	}
 }
@@ -57,8 +57,8 @@ void getMessage()
 
 	if(wyniki != 0)
 	{
-		while(read(wyniki,bufor,512) < 1) {}
-		printf("\nSERWER WYSŁAŁ WIADOMOŚĆ:\n%s", bufor);
+		while(read(wyniki,bufor,ROZMIAR_BUFORA) < 1) {}
+		printf("SERWER WYSŁAŁ WIADOMOŚĆ:\n%s", bufor);
 		close(wyniki);
 	}
 }
@@ -69,19 +69,25 @@ void disconnect()
 	unlink("wyniki.txt");
 }
 
-// FUNKCJA GŁÓWNA
-int main(int argc, char *argv[])
+// NAGŁÓWEK DLA KLIENTA
+void header(char nazwa_uzytkownika[100])
 {
-	char uzytkownik[100];
-	getlogin_r(uzytkownik, 100);
-
   printf("\n");
   printf("┬┌─┬  ┬┌─┐┌┐┌┌┬┐\n");
   printf("├┴┐│  │├┤ │││ │ \n");
   printf("┴ ┴┴─┘┴└─┘┘└┘ ┴ \n");
+  printf("Wyślij wiadomość do serwera i czekaj na odpowiedź.");
   printf("\n");
-	printf("TWOJA NAZWA: %s\n", uzytkownik);
+	printf("UŻYTKOWNIK: %s\n", nazwa_uzytkownika);
+}
 
+// FUNKCJA GŁÓWNA
+int main(int argc, char *argv[])
+{
+	char nazwa_uzytkownika[100];
+	getlogin_r(nazwa_uzytkownika, 100);
+
+  header(nazwa_uzytkownika);
 	connect();
 	sendMessage();
 	getMessage();

@@ -15,7 +15,7 @@ void getMessage()
 
    if(dane != 0)
    {
-     while(read(dane,bufor,512) < 1) {}
+     while(read(dane,bufor,ROZMIAR_BUFORA) < 1) {}
      printf("%s", bufor);
    }
 }
@@ -26,7 +26,7 @@ void sendMessage()
 	int wyniki;
 	char bufor[ROZMIAR_BUFORA];
 	char znak[1];
-	int counter = 0;
+	int licznik = 0;
 
 	while((wyniki = open("wyniki.txt", O_RDWR|O_CREAT|O_EXCL, 0711)) < 0) {}
 
@@ -39,12 +39,12 @@ void sendMessage()
 
 			if(znak[0] == (char)27)
 			{
-				write(wyniki, bufor, counter);
+				write(wyniki, bufor, licznik);
 				close(wyniki);
 				break;
 			}
-			bufor[counter] = znak[0];
-			counter++;
+			bufor[licznik] = znak[0];
+			licznik++;
 		}
 	}
 }
@@ -56,22 +56,27 @@ void disconnect()
 		unlink("dane.txt");
 }
 
-// FUNKCJA GŁÓWNA
-int main()
+// NAGŁÓWEK DLA SERWERA
+void header()
 {
   printf("\n");
   printf("┌─┐┌─┐┬─┐┬ ┬┌─┐┬─┐\n");
   printf("└─┐├┤ ├┬┘│││├┤ ├┬┘\n");
   printf("└─┘└─┘┴└─└┴┘└─┘┴└─\n");
-  printf("\n");
+  printf("Serwer uruchomiony, oczekuję na zgłoszenia...\n");
+}
 
+// FUNKCJA GŁÓWNA
+int main()
+{
+  header();
 	while(TRUE)
 	{
 		getMessage();
 		sendMessage();
 		disconnect();
-		printf("\n");
+    printf("Serwer oczekuje na kolejne zgłoszenie...");
+		printf("\n\n");
 	}
-
 	return 0;
 }
