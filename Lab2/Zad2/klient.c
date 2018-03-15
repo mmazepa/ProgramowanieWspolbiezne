@@ -9,7 +9,7 @@
 // NAWIĄZANIE POŁĄCZENIA Z SERWEREM
 void connect()
 {
-	while (open("lockfile",O_CREAT|O_EXCL, 0711)==-1)
+	while (open("bin/lockfile",O_CREAT|O_EXCL, 0)==-1)
   {
     printf("Serwer zajęty, proszę czekać!\n");
     sleep(3);
@@ -62,7 +62,7 @@ void getMessage()
 	{
 		while(read(wyniki,bufor,ROZMIAR_BUFORA) < 1) {}
 		printf("\nSERWER WYSŁAŁ WIADOMOŚĆ:\n%s", bufor);
-		close(wyniki);
+		// close(wyniki);
     printf("\n");
 	}
 }
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 	getlogin_r(nazwa_uzytkownika, 100);
 
   header(nazwa_uzytkownika);
-	connect();
+	// connect();
 	sendMessage();
 	getMessage();
 	disconnect();

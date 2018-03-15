@@ -19,7 +19,7 @@ void getMessage()
    {
      while(read(dane,bufor,ROZMIAR_BUFORA) < 1) {}
      printf("\nKLIENT WYSŁAŁ WIADOMOŚĆ:\n%s", bufor);
-     close(dane);
+     // close(dane);
      printf("\n");
    }
 }
@@ -57,7 +57,7 @@ void sendMessage()
 // OCZYSZCZANIE BUFORÓW
 void disconnect()
 {
-		unlink("lockfile");
+		unlink("bin/lockfile");
 		unlink("dane.txt");
 }
 

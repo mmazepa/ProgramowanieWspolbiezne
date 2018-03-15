@@ -5,5 +5,5 @@ gcc -o bin/klient klient.c
 gcc -o bin/serwer serwer.c
 rm -f dane.txt
 rm -f wyniki.txt
-rm -f lockfile
+rm -f bin/lockfile
 exit 0
