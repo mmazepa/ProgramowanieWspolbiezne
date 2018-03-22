@@ -21,7 +21,7 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
 	</tr>
     <tr>
       <td>Lab1</td>
-      <td>Zarządzanie procesami i komunikacja przez współdzielone pliku w programach w bash'u</td>
+      <td>Zarządzanie procesami i komunikacja przez współdzielone pliki w programach w bash'u</td>
       <td>Zad4</td>
       <td>08.03.2018</td>
       <td>01.03.2018</td>
@@ -29,7 +29,7 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
     </tr>
     <tr>
       <td>Lab2</td>
-      <td>Komunikacja przez współdzielone pliku w programach w języku C</td>
+      <td>Komunikacja przez współdzielone pliki w programach w języku C</td>
       <td>Zad2</td>
       <td>15.03.2018</td>
       <td>-</td>
