@@ -10,10 +10,53 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
 
 ## Laboratorium
 
-| Laboratorium | Zadanie | Deadline   | Data oddania | Wynik                  |
-|--------------|---------|------------|--------------|------------------------|
-| Lab1         | Zad4    | 08.03.2018 | 01.03.2018   | + Pliki w bashu        |
-| Lab2         | Zad2    | 15.03.2018 | -            |                        |
-| Lab3         | Zad3    | 22.03.2018 | 15.03.2018   | + szukanie współbieżne |
-| Lab4         | Zad2    | 29.03.2018 |              |                        |
-| Lab5         |         |            |              |                        |
+<table>
+	<tr>
+      <th>Laboratorium</th>
+      <th>Temat</th>
+      <th>Podlega odbiorowi</th>
+      <th>Deadline</th>
+      <th>Data oddania</th>
+      <th>Wynik</th>
+	</tr>
+    <tr>
+      <td>Lab1</td>
+      <td>Zarządzanie procesami i komunikacja przez współdzielone pliku w programach w bash'u</td>
+      <td>Zad4</td>
+      <td>08.03.2018</td>
+      <td>01.03.2018</td>
+      <td>+ Pliki w bash'u</td>
+    </tr>
+    <tr>
+      <td>Lab2</td>
+      <td>Komunikacja przez współdzielone pliku w programach w języku C</td>
+      <td>Zad2</td>
+      <td>15.03.2018</td>
+      <td>-</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Lab3</td>
+      <td>Proste mechanizmy koordynacji procesów w bash'u</td>
+      <td>Zad3</td>
+      <td>22.03.2018</td>
+      <td>15.03.2018</td>
+      <td>+ szukanie współbieżne</td>
+    </tr>
+    <tr>
+      <td>Lab4</td>
+      <td>Kolejki FIFO i sygnały w bash'u</td>
+      <td>Zad2</td>
+      <td>05.04.2019</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Lab5</td>
+      <td>Operowanie na kolejkach FIFO w języku C</td>
+      <td>Zad1</td>
+      <td>12.04.2018</td>
+      <td></td>
+      <td></td>
+    </tr>
+</table>
