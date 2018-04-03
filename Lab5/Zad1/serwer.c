@@ -3,8 +3,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-#define DB_SIZE 10
-#define MAX_LINE 70
+#define DB_SIZE 20
+#define MAX_LINE 100
 #define DB_DATA_FILE "baza"  //plik z zawartoscia bazy danych
 
 //Struktura bazy danych
