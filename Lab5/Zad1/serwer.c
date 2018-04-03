@@ -1,97 +1,135 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <string.h>
+#define DB_SIZE 10
+#define MAX_LINE 70
+#define DB_DATA_FILE "baza"  //plik z zawartoscia bazy danych
 
-#define rozmiar_bazy 20
-#define dlugosc_nazwiska 20
+//Struktura bazy danych
 
-struct user
+typedef struct _CLIENT_DATA
 {
-  int id;
-  char* nazwisko;
-};
+	int id;
+	char * nazwisko;
+} CLIENT_DATA;
 
-struct kom_serv2cli
+typedef struct _MESSAGE_DATA
 {
-  int liczba;
-  char* lancuch;
-};
+	int id;
+	char * homepath;
+} MESSAGE_DATA;
 
-void wypelnij_baze(struct user baza_danych[rozmiar_bazy])
+//Utworzenie bazy danych i uzupelnienie jej wartosciami
+
+int utworzBaze(void * data)
 {
-  strncpy(baza_danych[0].nazwisko, "Jedynkowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[1].nazwisko, "Dwójkowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[2].nazwisko, "Trójkowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[3].nazwisko, "Czwórkowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[4].nazwisko, "Piątkowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[5].nazwisko, "Szóstkowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[6].nazwisko, "Siódemkowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[7].nazwisko, "Ósemkowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[8].nazwisko, "Dziewięciowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[9].nazwisko, "Dziesięciowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[10].nazwisko, "Aowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[11].nazwisko, "Beowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[12].nazwisko, "Ceowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[13].nazwisko, "Deowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[14].nazwisko, "Eowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[15].nazwisko, "Efowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[16].nazwisko, "Gieowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[17].nazwisko, "Haowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[18].nazwisko, "Iowski\0", dlugosc_nazwiska);
-  strncpy(baza_danych[19].nazwisko, "Jotowski\0", dlugosc_nazwiska);
+  FILE * fp;
+
+  char buffer[MAX_LINE];
+  int i = 0;
+
+  if (fp = fopen(DB_DATA_FILE, "r"))
+  {
+    while((fgets(buffer, sizeof(buffer), fp) != NULL) && (i<DB_SIZE))  // Zapis danych z pliku do bazy danych
+    {
+      ((CLIENT_DATA *)data)[i].nazwisko = (char *) malloc(MAX_LINE);
+      sscanf(buffer, "%d %20s", &((CLIENT_DATA *)data)[i].id, ((CLIENT_DATA *)data)[i].nazwisko);   //20 znakow
+      i++;
+    }
+    fclose(fp);
+  }
+  else
+  {
+    printf("Brak pliku z zawartoscia bazy danych!");
+    return 1;
+  }
+  return 0;
 }
+
+//Pobieranie nazwiska z bazy przez ID rekordu
+
+char * getNazwiskoByID(void * data, int id)
+{
+  int i = 0;
+
+  for (i = 0; i < DB_SIZE; i++)
+  {
+    if(((CLIENT_DATA *)data)[i].id == id)
+    {
+      return ((CLIENT_DATA *)data)[i].nazwisko;
+    }
+  }
+  return "Nie ma rekordu z takim podanym ID w bazie danych!";
+}
+
+//Pobieranie komunikatu od klienta do serwera (zapytanie)
+
+MESSAGE_DATA getClientData(int client, int size)
+{
+  MESSAGE_DATA data;
+
+  unsigned char * buffer = (char *) malloc(size);
+
+  read(client, buffer, size);
+
+  memcpy(&data.id, buffer, sizeof(int));
+  data.homepath = (char *) malloc(size - sizeof(int));
+  memcpy(data.homepath, (buffer + sizeof(int)), size - sizeof(int));
+
+	free(buffer);
+	return data;
+}
+
+//Wysylanie odpowiedzi (komunikatu) do klienta
+
+void sendMessage(int server, void * db, void * data)
+{
+	int length = 0;
+	unsigned char * message;
+  unsigned char * nazwisko = getNazwiskoByID(db, ((MESSAGE_DATA *)data)->id);
+
+  message = (char *) malloc(strlen(nazwisko) + sizeof(int) + 1);
+  length = strlen(nazwisko);
+  memcpy(message, &length , sizeof(int));
+  memcpy(message + sizeof(int), nazwisko, length);
+
+  write(server, message, length + sizeof(int));
+
+	free(message);
+}
+
+//Glowna funkcja programu
 
 int main()
 {
-  // system("clear");
-  printf("\n");
-  printf("SERWER WITA!");
-  printf("\n");
+	CLIENT_DATA dbdata[DB_SIZE];
+	MESSAGE_DATA data;
 
-  // STWORZENIE BAZY DANYCH
-  struct user baza_danych[rozmiar_bazy];
+	utworzBaze(dbdata);
 
-  // NADANIE ID I ZAREZERWOWANIE PAMIĘCI NA NAZWISKA
-  for (int i = 0; i < rozmiar_bazy ; i++)
-  {
-    baza_danych[i].id = i+1;
-    baza_danych[i].nazwisko = (char*)malloc(sizeof(char)*dlugosc_nazwiska);
-  }
+	mkfifo("klientfifo", 0666);
+	mkfifo("serwerfifo", 0666);
 
-  // STATYCZNE WYPEŁNIENIE BAZY DANYCH
-  wypelnij_baze(baza_danych);
+	int klient = open("klientfifo", O_RDONLY);
+	int serwer = open("serwerfifo", O_WRONLY);
 
-  // WYPISANIE ZAWARTOŚCI BAZY W TERMINALU
-  // for (int i = 0; i < rozmiar_bazy ; i++)
-  // {
-  //     printf("[%d]: %s\n", baza_danych[i].id, baza_danych[i].nazwisko);
-  // }
+	int messageLength = 0;
+	int bytes = 0;
 
-  printf("\n");
-
-  int podane_id = 0;
-  int licznik = 0;
-  printf("Podaj id: ");
-  scanf("%d", &podane_id);
-
-  // PRZESZUKIWANIE BAZY DANYCH
-  for (int i = 0; i < rozmiar_bazy ; i++)
-  {
-    if(baza_danych[i].id == podane_id)
+	while(1)
+	{
+    if((bytes = read(klient, &messageLength, sizeof(int))) > 0)
     {
-      printf("[%d]: %s\n", baza_danych[i].id, baza_danych[i].nazwisko);
-    }
-    else
-    {
-      licznik++;
+      data = getClientData(klient, messageLength);
+      sendMessage(serwer, &dbdata, &data);
     }
   }
 
-  if (licznik == rozmiar_bazy)
-  {
-    printf("Nie ma!\n");
-  }
+	close(klient);
+	close(serwer);
 
-  printf("\n");
-  return 0;
+	unlink("klientfifo");
+	unlink("serwerfifo");
 }
