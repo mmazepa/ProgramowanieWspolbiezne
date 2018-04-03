@@ -1,12 +1,13 @@
 #!/bin/bash
 
 server=serwerfifo
-klient="$1""/klientfifo"
+folder="$HOME"
+klient="$folder/klientfifo"
 
 trap "rm -f $klient" EXIT
 
 if [[ ! -p $klient ]]; then
-    mkdir -p $1
+    mkdir -p $folder
     mkfifo $klient
 fi
 
@@ -15,6 +16,6 @@ if [[ ! -p $server ]]; then
     exit 1
 fi
 
-echo $klient $2 > $server
+echo $klient $1 > $server
 read line < $klient
 echo $line
