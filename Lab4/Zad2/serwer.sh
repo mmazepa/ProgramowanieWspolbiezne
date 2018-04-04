@@ -1,26 +1,32 @@
 #!/bin/bash
 
-server=serwerfifo
+potok_serwera=serwerfifo
 
+function szescian {
+  let potega=$1**3
+}
+
+trap "echo Caught SIGUSR1; exit 1" SIGUSR1;
 if [[ "$1" ]]; then
 	if [[ ! -p $1 ]]; then
-		echo "Lacze nazwane klienta nie istnieje (nie dziala)"
+		echo "Łącze klienta nie odpowiada!"
 	else
-		echo $(expr $2 \* $2) > $1
+    szescian "$2"
+		echo "[serwer: $USER] Wynik: $2^3 = $potega" > $1
 	fi
 else
-	trap "rm -f $server" EXIT
+	trap "rm -f $potok_serwera" EXIT
 	trap "" SIGTERM
 	trap "" SIGHUP
 
-	if [[ ! -p $server ]]; then
-		mkfifo $server
+	if [[ ! -p $potok_serwera ]]; then
+		mkfifo $potok_serwera
 	fi
 
 	while true
 	do
-		if read line < $server; then
-			$0 $line &
+		if read odczyt < $potok_serwera; then
+			$0 $odczyt &
 		fi
 	done
 fi

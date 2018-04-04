@@ -1,21 +1,23 @@
 #!/bin/bash
 
-server=serwerfifo
+potok_serwera=serwerfifo
 folder="$HOME"
-klient="$folder/klientfifo"
+potok_klienta="$folder/klientfifo"
 
-trap "rm -f $klient" EXIT
-
-if [[ ! -p $klient ]]; then
-    mkdir -p $folder
-    mkfifo $klient
+if [[ ! $1 -eq null ]]; then
+  trap "rm -f $potok_klienta" EXIT
+  if [[ ! -p $potok_klienta ]]; then
+      mkdir -p $folder
+      mkfifo $potok_klienta
+  fi
+  if [[ ! -p $potok_serwera ]]; then
+      echo "Łącze serwera nie odpowiada!"
+      exit 1
+  else
+    echo $potok_klienta $1 > $potok_serwera
+    read odczyt < $potok_klienta
+    echo $odczyt
+  fi
+else
+  echo "Nie podano parametru!"
 fi
-
-if [[ ! -p $server ]]; then
-    echo "Lacze nazwane serwera nie istnieje (nie dziala)"
-    exit 1
-fi
-
-echo $klient $1 > $server
-read line < $klient
-echo $line
