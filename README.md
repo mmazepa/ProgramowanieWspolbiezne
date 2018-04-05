@@ -33,7 +33,7 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td>Zad2</td>
       <td>15.03.2018</td>
       <td>-</td>
-      <td></td>
+      <td>-</td>
     </tr>
     <tr>
       <td>Lab3</td>
@@ -47,15 +47,23 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td>Lab4</td>
       <td>Kolejki FIFO i sygnały w bash'u</td>
       <td>Zad2</td>
-      <td>05.04.2019</td>
-      <td></td>
-      <td></td>
+      <td>05.04.2018</td>
+      <td>05.04.2018</td>
+      <td>+ kolejki FIFO w bashu</td>
     </tr>
     <tr>
       <td>Lab5</td>
       <td>Operowanie na kolejkach FIFO w języku C</td>
       <td>Zad1</td>
       <td>12.04.2018</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Lab6</td>
+      <td>Kolejki komunikatów</td>
+      <td>Zad3</td>
+      <td>19.04.2018</td>
       <td></td>
       <td></td>
     </tr>
