@@ -4,8 +4,8 @@
 #include <fcntl.h>
 #include <string.h>
 
-#define ROZMIAR_BAZY 50
-#define MAX_LINE 20
+#define ROZMIAR_BAZY 20
+#define MAKSYMALNA_DLUGOSC 20
 // Plik z zawartoscią bazy
 #define PLIK_BAZY "baza_danych"
 
@@ -26,8 +26,7 @@ typedef struct Wiadomosc
 int stworz_baze_danych(void * data)
 {
   FILE * fp;
-
-  char buffer[MAX_LINE];
+  char buffer[MAKSYMALNA_DLUGOSC];
   int i = 0;
 
   if (fp = fopen(PLIK_BAZY, "r"))
@@ -35,8 +34,7 @@ int stworz_baze_danych(void * data)
     // Wczytywanie z pliku do bazy
     while((fgets(buffer, sizeof(buffer), fp) != NULL) && (i<ROZMIAR_BAZY))
     {
-      ((Klient *)data)[i].nazwisko = (char *) malloc(MAX_LINE);
-      // Max. 20 znaków
+      ((Klient *)data)[i].nazwisko = (char *) malloc(MAKSYMALNA_DLUGOSC);
       sscanf(buffer, "%d %20s", &((Klient *)data)[i].id, ((Klient *)data)[i].nazwisko);
       i++;
     }
@@ -58,9 +56,7 @@ char * pobierz_nazwisko(void * data, int id)
   for (i = 0; i < ROZMIAR_BAZY; i++)
   {
     if(((Klient *)data)[i].id == id)
-    {
       return ((Klient *)data)[i].nazwisko;
-    }
   }
   return "Podane ID nie znajduje się w bazie danych!";
 }

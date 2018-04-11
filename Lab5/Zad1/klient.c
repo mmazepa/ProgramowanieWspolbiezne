@@ -50,7 +50,7 @@ void pobierz_dane_serwera(int serwer)
 	read(serwer, &dlugosc, sizeof(int));
 	nazwisko = malloc(dlugosc);
 
-	if((bytes=read(serwer, nazwisko, dlugosc)) > 0) { }
+  bytes=read(serwer, nazwisko, dlugosc);
 	printf("%s\n", nazwisko);
 }
 
