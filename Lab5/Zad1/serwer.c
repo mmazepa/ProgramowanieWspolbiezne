@@ -3,72 +3,72 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-#define DB_SIZE 20
-#define MAX_LINE 100
-#define DB_DATA_FILE "baza"  //plik z zawartoscia bazy danych
 
-//Struktura bazy danych
+#define ROZMIAR_BAZY 50
+#define MAX_LINE 20
+// Plik z zawartoscią bazy
+#define PLIK_BAZY "baza_danych"
 
-typedef struct _CLIENT_DATA
+// Struktura bazy
+typedef struct Klient
 {
 	int id;
 	char * nazwisko;
-} CLIENT_DATA;
+} Klient;
 
-typedef struct _MESSAGE_DATA
+typedef struct Wiadomosc
 {
 	int id;
 	char * homepath;
-} MESSAGE_DATA;
+} Wiadomosc;
 
-//Utworzenie bazy danych i uzupelnienie jej wartosciami
-
-int utworzBaze(void * data)
+// Tworzenie i wypełnianie bazy
+int stworz_baze_danych(void * data)
 {
   FILE * fp;
 
   char buffer[MAX_LINE];
   int i = 0;
 
-  if (fp = fopen(DB_DATA_FILE, "r"))
+  if (fp = fopen(PLIK_BAZY, "r"))
   {
-    while((fgets(buffer, sizeof(buffer), fp) != NULL) && (i<DB_SIZE))  // Zapis danych z pliku do bazy danych
+    // Wczytywanie z pliku do bazy
+    while((fgets(buffer, sizeof(buffer), fp) != NULL) && (i<ROZMIAR_BAZY))
     {
-      ((CLIENT_DATA *)data)[i].nazwisko = (char *) malloc(MAX_LINE);
-      sscanf(buffer, "%d %20s", &((CLIENT_DATA *)data)[i].id, ((CLIENT_DATA *)data)[i].nazwisko);   //20 znakow
+      ((Klient *)data)[i].nazwisko = (char *) malloc(MAX_LINE);
+      // Max. 20 znaków
+      sscanf(buffer, "%d %20s", &((Klient *)data)[i].id, ((Klient *)data)[i].nazwisko);
       i++;
     }
     fclose(fp);
   }
   else
   {
-    printf("Brak pliku z zawartoscia bazy danych!");
+    printf("Baza danych nie istnieje (plik nie istnieje)!");
     return 1;
   }
   return 0;
 }
 
-//Pobieranie nazwiska z bazy przez ID rekordu
-
-char * getNazwiskoByID(void * data, int id)
+// Pobieranie nazwiska z bazy po ID
+char * pobierz_nazwisko(void * data, int id)
 {
   int i = 0;
 
-  for (i = 0; i < DB_SIZE; i++)
+  for (i = 0; i < ROZMIAR_BAZY; i++)
   {
-    if(((CLIENT_DATA *)data)[i].id == id)
+    if(((Klient *)data)[i].id == id)
     {
-      return ((CLIENT_DATA *)data)[i].nazwisko;
+      return ((Klient *)data)[i].nazwisko;
     }
   }
-  return "Nie ma rekordu z takim podanym ID w bazie danych!";
+  return "Podane ID nie znajduje się w bazie danych!";
 }
 
-//Pobieranie komunikatu od klienta do serwera (zapytanie)
-
-MESSAGE_DATA getClientData(int client, int size)
+// Pobieranie woiadomości od klienta
+Wiadomosc pobierz_dane_klienta(int client, int size)
 {
-  MESSAGE_DATA data;
+  Wiadomosc data;
 
   unsigned char * buffer = (char *) malloc(size);
 
@@ -82,32 +82,29 @@ MESSAGE_DATA getClientData(int client, int size)
 	return data;
 }
 
-//Wysylanie odpowiedzi (komunikatu) do klienta
-
-void sendMessage(int server, void * db, void * data)
+// Wysyłanie wiadomości (odpowiedzi) do klienta
+void wyslij_wiadomosc(int serwer, void * db, void * data)
 {
-	int length = 0;
-	unsigned char * message;
-  unsigned char * nazwisko = getNazwiskoByID(db, ((MESSAGE_DATA *)data)->id);
+	int dlugosc = 0;
+	unsigned char * wiadomosc;
+  unsigned char * nazwisko = pobierz_nazwisko(db, ((Wiadomosc *)data)->id);
 
-  message = (char *) malloc(strlen(nazwisko) + sizeof(int) + 1);
-  length = strlen(nazwisko);
-  memcpy(message, &length , sizeof(int));
-  memcpy(message + sizeof(int), nazwisko, length);
+  wiadomosc = (char *) malloc(strlen(nazwisko) + sizeof(int) + 1);
+  dlugosc = strlen(nazwisko);
+  memcpy(wiadomosc, &dlugosc , sizeof(int));
+  memcpy(wiadomosc + sizeof(int), nazwisko, dlugosc);
 
-  write(server, message, length + sizeof(int));
+  write(serwer, wiadomosc, dlugosc + sizeof(int));
 
-	free(message);
+	free(wiadomosc);
 }
-
-//Glowna funkcja programu
 
 int main()
 {
-	CLIENT_DATA dbdata[DB_SIZE];
-	MESSAGE_DATA data;
+	Klient dbdata[ROZMIAR_BAZY];
+	Wiadomosc data;
 
-	utworzBaze(dbdata);
+	stworz_baze_danych(dbdata);
 
 	mkfifo("klientfifo", 0666);
 	mkfifo("serwerfifo", 0666);
@@ -115,15 +112,15 @@ int main()
 	int klient = open("klientfifo", O_RDONLY);
 	int serwer = open("serwerfifo", O_WRONLY);
 
-	int messageLength = 0;
+	int dlugosc_wiadomosci = 0;
 	int bytes = 0;
 
 	while(1)
 	{
-    if((bytes = read(klient, &messageLength, sizeof(int))) > 0)
+    if((bytes = read(klient, &dlugosc_wiadomosci, sizeof(int))) > 0)
     {
-      data = getClientData(klient, messageLength);
-      sendMessage(serwer, &dbdata, &data);
+      data = pobierz_dane_klienta(klient, dlugosc_wiadomosci);
+      wyslij_wiadomosc(serwer, &dbdata, &data);
     }
   }
 

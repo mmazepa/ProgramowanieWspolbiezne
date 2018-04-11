@@ -4,77 +4,73 @@
 #include <string.h>
 #include <stdio.h>
 
-typedef struct _MESSAGE_INFO
+typedef struct Wiadomosc
 {
-  unsigned int length;
+  unsigned int dlugosc;
   int id;
   char * homepath;
-} MESSAGE_INFO;
+} Wiadomosc;
 
-//Pobieranie z klawiatury ID do zapytania
-
-int getID(char * arg)
+// Pobieranie ID od użytkownika
+int pobierz_id(char * wpis)
 {
   int id = -1;
 
-	if(arg != NULL)
-    sscanf(arg, "%d", &id);
+	if(wpis != NULL)
+    sscanf(wpis, "%d", &id);
   else
-    printf("Nie podano ID rekordu!\n");
+    printf("Nie podano identyfikatora!\n");
 
 	return id;
 }
 
-//Wysylanie zapytania do serwera
-
-void sendMessage(int klient, void * data)
+// Wysyłanie zapytania do serwera
+void wyslij_wiadomosc(int klient, void * data)
 {
   unsigned char * buffer;
 
-  buffer = (char *) malloc(sizeof(int) + ((MESSAGE_INFO *)data)->length);
-  memcpy(buffer, &((MESSAGE_INFO *)data)->length, sizeof(int));
-  memcpy(buffer + sizeof(int), &((MESSAGE_INFO *)data)->id, sizeof(int));
-  memcpy(buffer + (2 * sizeof(int)), ((MESSAGE_INFO *)data)->homepath, ((MESSAGE_INFO *)data)->length - sizeof(int));
+  buffer = (char *) malloc(sizeof(int) + ((Wiadomosc *)data)->dlugosc);
+  memcpy(buffer, &((Wiadomosc *)data)->dlugosc, sizeof(int));
+  memcpy(buffer + sizeof(int), &((Wiadomosc *)data)->id, sizeof(int));
+  memcpy(buffer + (2 * sizeof(int)), ((Wiadomosc *)data)->homepath, ((Wiadomosc *)data)->dlugosc - sizeof(int));
 
-  write(klient, buffer, ((MESSAGE_INFO *)data)->length + sizeof(int));
+  write(klient, buffer, ((Wiadomosc *)data)->dlugosc + sizeof(int));
 
   free(buffer);
 }
 
-//Pobieranie danych z serwera
-
-void getServerData(int serwer)
+// Pobieranie danych z serwera
+void pobierz_dane_serwera(int serwer)
 {
   unsigned char * nazwisko;
-  int length = 0;
+  int dlugosc = 0;
   int bytes = 0;
 
 	fsync(serwer);
-	read(serwer, &length, sizeof(int));
-	nazwisko = malloc(length);
+	read(serwer, &dlugosc, sizeof(int));
+	nazwisko = malloc(dlugosc);
 
-	if((bytes=read(serwer, nazwisko, length)) > 0) { }
+	if((bytes=read(serwer, nazwisko, dlugosc)) > 0) { }
 	printf("%s\n", nazwisko);
 }
 
-//Glowna funkcja programu
-
 int main(int argc, char * argv[])
 {
-	MESSAGE_INFO data;
+	Wiadomosc data;
 
-	data.id = getID(argv[1]);
+	data.id = pobierz_id(argv[1]);
 	data.homepath = getenv("HOME");
-	data.length = sizeof(int) + strlen(data.homepath);
+	data.dlugosc = sizeof(int) + strlen(data.homepath);
 
 	if(data.id < 0)
 	{
+    printf("Identyfikator nie może być mniejszy od zera!\n");
 		return 1;
 	}
 
 	int klient = open("klientfifo", O_WRONLY);
 	int serwer = open("serwerfifo", O_RDONLY);
 
-	sendMessage(klient, &data);
-	getServerData(serwer);
+	wyslij_wiadomosc(klient, &data);
+	pobierz_dane_serwera(serwer);
 }
