@@ -90,6 +90,9 @@ void wyslij_wiadomosc(int serwer, void * db, void * data)
   memcpy(wiadomosc, &dlugosc , sizeof(int));
   memcpy(wiadomosc + sizeof(int), nazwisko, dlugosc);
 
+  // Zapewnienie niepodzielności wysyłania komunikatu
+  // dzięki zastosowaniu pojedynczego wywołania funkcji write()
+  // do wysłania całego komunikatu
   write(serwer, wiadomosc, dlugosc + sizeof(int));
 
 	free(wiadomosc);

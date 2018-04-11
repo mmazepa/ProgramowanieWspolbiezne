@@ -34,6 +34,9 @@ void wyslij_wiadomosc(int klient, void * data)
   memcpy(buffer + sizeof(int), &((Wiadomosc *)data)->id, sizeof(int));
   memcpy(buffer + (2 * sizeof(int)), ((Wiadomosc *)data)->homepath, ((Wiadomosc *)data)->dlugosc - sizeof(int));
 
+  // Zapewnienie niepodzielności wysyłania komunikatu
+  // dzięki zastosowaniu pojedynczego wywołania funkcji write()
+  // do wysłania całego komunikatu
   write(klient, buffer, ((Wiadomosc *)data)->dlugosc + sizeof(int));
 
   free(buffer);
