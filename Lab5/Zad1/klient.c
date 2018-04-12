@@ -16,10 +16,21 @@ int pobierz_id(char * wpis)
 {
   int id = -1;
 
-	if(wpis != NULL)
+	if (wpis != NULL && wpis != "")
+  {
     sscanf(wpis, "%d", &id);
+  }
   else
+  {
     printf("Nie podano identyfikatora!\n");
+    id = -1;
+  }
+
+  if (id < 0)
+  {
+    printf("Identyfikator nie może być mniejszy od zera!\n");
+    id = -1;
+  }
 
 	return id;
 }
@@ -64,12 +75,6 @@ int main(int argc, char * argv[])
 	data.id = pobierz_id(argv[1]);
 	data.homepath = getenv("HOME");
 	data.dlugosc = sizeof(int) + strlen(data.homepath);
-
-	if(data.id < 0)
-	{
-    printf("Identyfikator nie może być mniejszy od zera!\n");
-		return 1;
-	}
 
 	int klient = open("klientfifo", O_WRONLY);
 	int serwer = open("serwerfifo", O_RDONLY);

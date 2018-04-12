@@ -67,4 +67,12 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td></td>
       <td></td>
     </tr>
+    <tr>
+      <td>Lab7</td>
+      <td>Pamięć dzielona i semafory</td>
+      <td>Zad2</td>
+      <td>26.04.2018</td>
+      <td></td>
+      <td></td>
+    </tr>
 </table>

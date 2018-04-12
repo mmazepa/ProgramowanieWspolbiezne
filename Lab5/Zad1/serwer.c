@@ -42,7 +42,7 @@ int stworz_baze_danych(void * data)
   }
   else
   {
-    printf("Baza danych nie istnieje (plik nie istnieje)!");
+    printf("[SERWER]: Baza danych nie istnieje (plik nie istnieje)!");
     return 1;
   }
   return 0;
@@ -53,12 +53,14 @@ char * pobierz_nazwisko(void * data, int id)
 {
   int i = 0;
 
+  if (id < 0) return "[SERWER]: Proszę podać identyfikator z zakresu liczb naturalnych.";
+
   for (i = 0; i < ROZMIAR_BAZY; i++)
   {
     if(((Klient *)data)[i].id == id)
       return ((Klient *)data)[i].nazwisko;
   }
-  return "Podane ID nie znajduje się w bazie danych!";
+  return "[SERWER]: Podane ID nie znajduje się w bazie danych!";
 }
 
 // Pobieranie woiadomości od klienta
