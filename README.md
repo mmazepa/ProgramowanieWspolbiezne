@@ -75,4 +75,8 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td></td>
       <td></td>
     </tr>
+    <tr>
+        <th colspan="5">W sumie oddano zadań do oceny:</th>
+        <th>4/7</th>
+    </tr>
 </table>
