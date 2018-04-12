@@ -56,8 +56,8 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td>Operowanie na kolejkach FIFO w języku C</td>
       <td>Zad1</td>
       <td>12.04.2018</td>
-      <td></td>
-      <td></td>
+      <td>12.04.2018</td>
+      <td>+ kolejki fifo w C</td>
     </tr>
     <tr>
       <td>Lab6</td>
