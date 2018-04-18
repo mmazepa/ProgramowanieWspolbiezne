@@ -4,21 +4,21 @@
 #include <sys/ipc.h>
 #include <string.h>
 
-#define DICTSIZE 20
+#define rozmiar_slownika 20
 #define klucz1 2005
 #define klucz2 2608
 
 typedef struct {
-  char polish[100];
-  char english[100];
-} dictionary;
+  char polski[100];
+  char angielski[100];
+} Slownik;
 
 typedef struct {
   long pID;
   char slowo[100];
-} message;
+} Wiadomosc;
 
-dictionary dictPolEng[DICTSIZE] = {
+Slownik slownik_pl_ang[rozmiar_slownika] = {
   {"rower", "bike"}, {"kot", "cat"},
   {"pies", "dog"}, {"owca", "lamb"},
   {"stół", "table"}, {"krzesło", "chair"},
@@ -39,33 +39,38 @@ int input, output;
 
 int main(int argc, char *argv[])
 {
-  message communique;
+  Wiadomosc komunikat;
   input = msgget(klucz1, 0777 | IPC_CREAT);
   output = msgget(klucz2, 0777 | IPC_CREAT);
 
   while(1)
   {
-    if(msgrcv(input, &communique, sizeof(char)*110, 0, 0) == -1)
+    if(msgrcv(input, &komunikat, sizeof(char)*110, 0, 0) == -1)
     {
-      printf("Błąd podczas odbioru słowa od klienta.");
+      printf("[BŁĄD]: Odbiór słowa od klienta nie powiódł się!");
       exit(1);
     }
 
-      printf("Odebrano: \"%s\", ", communique.slowo);
-      strcpy(communique.slowo, translate(communique.slowo));
-      printf("wysylanie do PID[%5ld] odpowiedz \"%s\".\n", communique.pID, communique.slowo);
+    printf("Odebrano: \"%s\", ", komunikat.slowo);
+    strcpy(komunikat.slowo, translate(komunikat.slowo));
+    printf("wysylanie do PID[%5ld] odpowiedz \"%s\".\n", komunikat.pID, komunikat.slowo);
 
-      if(msgsnd(output, &communique, sizeof(char)*110, 0) == -1){
-         printf("\nBłąd! Przy wysyłaniu słowa do klienta");
-         exit(2); }
+    if(msgsnd(output, &komunikat, sizeof(char)*110, 0) == -1)
+    {
+       printf("\n[BŁĄD]: Wysyłanie słowa do klienta nie powiodło się!");
+       exit(1);
+     }
    }
    return 0;
 }
 
-char *translate(char* word){
-   int i;
-   for ( i = 0; i < DICTSIZE; i++) {
-      if(!strcmp(word, dictPolEng[i].polish))
-         return dictPolEng[i].english; }
-   return "Nie znam takiego slowa.";
+char *translate(char* do_przetlumaczenia)
+{
+  int i;
+  for(i = 0; i < rozmiar_slownika; i++)
+  {
+    if(!strcmp(do_przetlumaczenia, slownik_pl_ang[i].polski))
+      return slownik_pl_ang[i].angielski;
+  }
+  return "Nie znam takiego slowa.";
 }
