@@ -37,15 +37,13 @@ int main(int argc, char* argv[])
     exit(1);
   }
 
-  printf("J. polski: \"%s\" - ", argv[1]);
-
+  printf("[PL]:  %s\n", argv[1]);
   if(msgrcv(output, &komunikat, sizeof(char)*110, getpid(), 0) == -1)
   {
     printf("\n[BŁĄD]: Odbieranie słowa od serwera nie powiodło się!");
     exit(1);
   }
-
-  printf("J. angielski: \"%s\".\n", komunikat.slowo);
+  printf("[ANG]: %s\n", komunikat.slowo);
 
   return 0;
 }
