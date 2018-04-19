@@ -2,6 +2,8 @@
 
 Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Współbieżne w roku akademickim 2017/2018. Wszystkie zadania zamieszczone w niniejszym repozytorium zostały wykonane samodzielnie.
 
+![Network](https://www.councilofnonprofits.org/sites/default/files/resources-tools/images/feature-network-approach.jpg)
+
 ## Student
 
 | Imię    | Nazwisko | Nr indeksu |
@@ -64,8 +66,8 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td>Kolejki komunikatów</td>
       <td>Zad3</td>
       <td>19.04.2018</td>
-      <td></td>
-      <td></td>
+      <td>19.04.2018</td>
+      <td>+ kolejki komunikatów</td>
     </tr>
     <tr>
       <td>Lab7</td>
@@ -76,7 +78,21 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td></td>
     </tr>
     <tr>
+      <td>Lab8</td>
+      <td>Gniazda BSD</td>
+      <td>Zad1</td>
+      <td>10.05.2018</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
         <th colspan="5">W sumie oddano zadań do oceny:</th>
-        <th>4/7</th>
+        <th>4/8</th>
     </tr>
 </table>
+
+## Podsumowanie
+
+| Liczba zadań oddanych | Liczba zadań zleconych | Skuteczność |
+|-----------------------|------------------------|-------------|
+| 5                     | 8                      | 62,5%       |
