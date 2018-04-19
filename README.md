@@ -2,13 +2,11 @@
 
 Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Współbieżne w roku akademickim 2017/2018. Wszystkie zadania zamieszczone w niniejszym repozytorium zostały wykonane samodzielnie.
 
-![Network](https://www.councilofnonprofits.org/sites/default/files/resources-tools/images/feature-network-approach.jpg)
+## Informacje ogólne
 
-## Student
-
-| Imię    | Nazwisko | Nr indeksu |
-|---------|----------|------------|
-| Mariusz | Mazepa   | 235371     |
+| Imię i nazwisko | Nr indeksu | Liczba zadań oddanych | Liczba zadań zleconych | Skuteczność |
+|-----------------|------------|-----------------------|------------------------|-------------|
+| Mariusz Mazepa  | 235371     | 5                     | 8                      | 62,5%       |
 
 ## Laboratorium
 
@@ -85,14 +83,4 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td></td>
       <td></td>
     </tr>
-    <tr>
-        <th colspan="5">W sumie oddano zadań do oceny:</th>
-        <th>4/8</th>
-    </tr>
 </table>
-
-## Podsumowanie
-
-| Liczba zadań oddanych | Liczba zadań zleconych | Skuteczność |
-|-----------------------|------------------------|-------------|
-| 5                     | 8                      | 62,5%       |
