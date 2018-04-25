@@ -6,6 +6,7 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 #include <signal.h>
+#include <unistd.h>
 
 #define klucz 15
 #define GRACZ_1 'X'
@@ -14,16 +15,6 @@
 int pamiec, semafor;
 char *adres;
 char symbol;
-
-// ------------------------------------------------------
-// INFO, INFO, INFO !!!
-// ------------------------------------------------------
-//    1) Aplikacja odczytuje sygnały
-//    2) Czyści pamięć na SIGINT i SIGTSTP
-// ------------------------------------------------------
-//    3) Zrobić tak, żeby wypisywało info o walkoverze
-//       na obu planszach, jeśli ktoś straci "połączenie"
-// ------------------------------------------------------
 
 void koniec()
 {
@@ -35,16 +26,9 @@ void koniec()
 
 void obsluga_sygnalow(int sygnal)
 {
-  if(sygnal == SIGINT)
+  if(sygnal == SIGINT || sygnal == SIGTSTP)
   {
-    printf("\n\nOdebrano sygnał SIGINT (ctrl+c)\n");
-    printf("Czyszczenie pamięci współdzielonej.\n");
-    koniec();
-  }
-  else if(sygnal == SIGTSTP)
-  {
-    printf("\n\nSIGTSTP sygnał (ctrl+z)\n");
-    printf("Czyszczenie pamięci współdzielonej.\n");
+    printf("\nPoddanie walkoverem!\n");
     koniec();
   }
 }
@@ -60,7 +44,7 @@ void rysuj_plansze()
   printf("[INFO]: Grasz jako %c.\n\n",symbol);
 
   printf("PLANSZA:\n\n");
-  for(int i = 0; i< 3; i++)
+  for(int i = 0; i < 3; i++)
   {
     for(int j = 0; j < 3; j++)
     {
@@ -147,13 +131,14 @@ void podaj_ruch()
   int numer_pola = -1;
   przerysuj_plansze();
   rysuj_schemat();
+  printf("\n");
 
   while(numer_pola == -1)
   {
-    printf("\nPodaj liczbę z zakresu 1-9: ");
+    printf("Podaj liczbę z zakresu 1-9: ");
     scanf("%d", &numer_pola);
     numer_pola = numer_pola - 1;
-    if(numer_pola == -1) koniec();
+
     if(numer_pola >= 0 && numer_pola < 9)
     {
       if(*(adres+numer_pola) != GRACZ_1 && *(adres+numer_pola) != GRACZ_2)
@@ -168,7 +153,7 @@ void podaj_ruch()
     }
     else
     {
-      printf("Nie ma takiego pola!\n");
+      printf("Pole poza planszą, wybierz inne!\n");
       numer_pola = -1;
     }
   }
@@ -186,6 +171,7 @@ int main (int argc, char *argv[])
                 * operO;
   pamiec = shmget(klucz,256,0777|IPC_CREAT);
   semafor = semget(klucz,2,0777|IPC_CREAT|IPC_EXCL);
+
   if(semafor != -1)
   { // X
     symbol = GRACZ_1;
@@ -209,12 +195,6 @@ int main (int argc, char *argv[])
   for(int i = 0; i < 9; i++)
   {
     adres[i] = ' ';
-  }
-
-  if(argv[1])
-  {
-    printf("Warunkowe czyszczenie pamięci współdzielonej.\n");
-    koniec();
   }
 
   while(1)
