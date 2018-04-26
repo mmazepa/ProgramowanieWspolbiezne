@@ -6,7 +6,7 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
 
 | Imię i nazwisko | Nr indeksu | Liczba zadań oddanych | Liczba zadań zleconych | Skuteczność |
 |-----------------|------------|-----------------------|------------------------|-------------|
-| Mariusz Mazepa  | 235371     | 5                     | 9                      | 55,56%      |
+| Mariusz Mazepa  | 235371     | 7                     | 9                      | 77,78%      |
 
 ## Laboratorium
 
@@ -72,16 +72,16 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td>Pamięć dzielona i semafory</td>
       <td>Zad2</td>
       <td>26.04.2018</td>
-      <td></td>
-      <td></td>
+      <td>26.04.2018</td>
+      <td>+ kółko i krzyżyk</td>
     </tr>
     <tr>
       <td>Lab8</td>
       <td>Gniazda BSD</td>
       <td>Zad1</td>
       <td>10.05.2018</td>
-      <td></td>
-      <td></td>
+      <td>26.04.2018</td>
+      <td>+ gniazda BSD</td>
     </tr>
     <tr>
       <td>Lab9</td>
