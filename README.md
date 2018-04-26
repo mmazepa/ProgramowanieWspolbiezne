@@ -6,7 +6,7 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
 
 | Imię i nazwisko | Nr indeksu | Liczba zadań oddanych | Liczba zadań zleconych | Skuteczność |
 |-----------------|------------|-----------------------|------------------------|-------------|
-| Mariusz Mazepa  | 235371     | 5                     | 8                      | 62,5%       |
+| Mariusz Mazepa  | 235371     | 5                     | 9                      | 55,56%      |
 
 ## Laboratorium
 
@@ -80,6 +80,14 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td>Gniazda BSD</td>
       <td>Zad1</td>
       <td>10.05.2018</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Lab9</td>
+      <td>Biblioteka funkcji graficznych Xlib</td>
+      <td>Zad3</td>
+      <td>17.05.2018</td>
       <td></td>
       <td></td>
     </tr>
