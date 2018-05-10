@@ -6,7 +6,7 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
 
 | Imię i nazwisko | Nr indeksu | Liczba zadań oddanych | Liczba zadań zleconych | Skuteczność |
 |-----------------|------------|-----------------------|------------------------|-------------|
-| Mariusz Mazepa  | 235371     | 7                     | 9                      | 77,78%      |
+| Mariusz Mazepa  | 235371     | 7                     | 10                     | 70,00%      |
 
 ## Laboratorium
 
@@ -91,4 +91,18 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
       <td></td>
       <td></td>
     </tr>
+    <tr>
+      <td>Lab10</td>
+      <td>Wątki według normy POSIX</td>
+      <td>Zad2</td>
+      <td>24.05.2018</td>
+      <td></td>
+      <td></td>
+    </tr>
 </table>
+
+## Zadanie semestralne
+
+| Numer | Temat | Deadline                 | Ocena |
+|-------|-------|--------------------------|-------|
+| 6     |       | Ostatnie zajęcia (07.06) |       |

@@ -1,0 +1,8 @@
+Mieszalnik kolorów:
+-------------------------------------------------------------------
+  1. Kilku graczy naraz
+  2. Każdy podaje kolor, który "miesza się" z kolorem w terminalu
+     i wyświetla wszystkim graczom efekt końcowy
+  3. Zwrócić uwagę na konflikt, kiedy ktoś pociąga za suwak
+     tego samego koloru w tym samym czasie w kierunku przeciwnym
+     (ustalić jakieś kolejkowanie, priorytet...)
