@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     // system("clear");
     printf("\nX PROTOKÓŁ\n");
     printf("Oczekiwanie na zamknięcie wszystkich okien...\n");
-    printf("-----------------------------------------------------------------\n");
+    printf("------------------------------------------------------------------------------\n");
 
     for (i = 1; i < argc; i++)
     {
@@ -105,9 +105,9 @@ int main(int argc, char *argv[])
       {
         czas = "sekundach";
       }
-      printf("[PID: %5d] Okno graficzne nr %2d (%s) zamknięto po %2.f %s.\n", (int)wpid, n, argv[n], t, czas);
+      printf("[PID: %5d] Okno graficzne nr %2d zamknięto po %2.f %s (%s).\n", (int)wpid, n, t, czas, argv[n]);
     }
-    printf("-----------------------------------------------------------------\n");
+    printf("------------------------------------------------------------------------------\n");
     printf("Wszystkie okna zostały zamknięte.\n\n");
     return 0;
 }
