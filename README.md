@@ -103,6 +103,6 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
 
 ## Zadanie semestralne
 
-| Numer | Temat | Deadline                 | Ocena |
-|-------|-------|--------------------------|-------|
-| 6     |       | Ostatnie zajęcia (07.06) |       |
+| Numer | Temat              | Deadline                      | Ocena |
+|-------|--------------------|-------------------------------|-------|
+| 6     | Mieszalnik kolorów | Ostatnie zajęcia (07.06.2018) |       |
