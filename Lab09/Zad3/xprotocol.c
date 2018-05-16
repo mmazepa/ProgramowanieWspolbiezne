@@ -7,59 +7,62 @@
 #include <time.h>
 #include <unistd.h>
 
-int startNewWindow(int n, char* host)
+int new_window(int n, char* host)
 {
-	Display *mydisplay;
-	Window mywindow;
-	XSetWindowAttributes mywindowattributes;
-	// XGCValues mygcvalues;
-	GC mygc;
-	Visual *myvisual;
-	int mydepth;
-	int myscreen;
-	// Colormap mycolormap;
-	XEvent myevent;
+	Display *display;
+	Window window;
+	XSetWindowAttributes window_attributes;
+	GC gc;
+	Visual *visual;
+	int depth;
+	int screen;
+	XEvent event;
+  XColor xcolor;
 
-	mydisplay = XOpenDisplay(host);
+	display = XOpenDisplay(host);
+	screen = DefaultScreen(display);
+	visual = DefaultVisual(display,screen);
+	depth = DefaultDepth(display,screen);
 
-	myscreen = DefaultScreen(mydisplay);
-	myvisual = DefaultVisual(mydisplay,myscreen);
-	mydepth = DefaultDepth(mydisplay,myscreen);
+	window_attributes.background_pixel = XWhitePixel(display,screen);
+	window_attributes.override_redirect = False;
 
-	mywindowattributes.background_pixel = XWhitePixel(mydisplay,myscreen);
-	mywindowattributes.override_redirect = False;
-
-	mywindow = XCreateWindow(mydisplay, XRootWindow(mydisplay, myscreen), 100, 100, 500, 500, 10, mydepth, InputOutput, myvisual, CWBackPixel|CWOverrideRedirect, &mywindowattributes);
-
-	XSelectInput(mydisplay,mywindow,ExposureMask|KeyPressMask);
-
-	// mycolormap = DefaultColormap(mydisplay,myscreen);
-
-	XMapWindow(mydisplay,mywindow);
-
-	mygc = DefaultGC(mydisplay,myscreen);
+	window = XCreateWindow(
+    display,
+    XRootWindow(display, screen),
+    100, 100, 500, 500, 10,
+    depth, InputOutput, visual,
+    CWBackPixel|CWOverrideRedirect,
+    &window_attributes
+  );
+	XSelectInput(display,window,ExposureMask|KeyPressMask);
+	XMapWindow(display,window);
+	gc = DefaultGC(display,screen);
 
 	int i, j;
 
 	while (1)
   {
-		XNextEvent(mydisplay,&myevent);
-
-		switch (myevent.type)
+		XNextEvent(display,&event);
+		switch (event.type)
     {
 			case Expose:
-				for (i = 0; i < 16; i++)
+				for (i = 0; i < 32; i++)
         {
-					for (j = 0; j < 16; j++)
+					for (j = 0; j < 32; j++)
           {
-						XSetForeground(mydisplay, mygc, 500*i+10*j);
-						XFillRectangle(mydisplay, mywindow, mygc, 20*i +n, 20*j +n, 20*(i+1), 20*(j+1));
-						XFlush(mydisplay);
+            xcolor.red = (i+j)*1000;
+            xcolor.green = (i+j)*200;
+            xcolor.blue = (i+j)*1000;
+
+            XSetForeground(display, gc, xcolor.pixel+320*i+10*j);
+						XFillRectangle(display, window, gc, 50*i+n, 50*j+n, 50*(i+1), 50*(j+1));
+						XFlush(display);
 					}
 				}
 				break;
-			 case KeyPress:
-				XCloseDisplay(mydisplay);
+			case KeyPress:
+				XCloseDisplay(display);
 				exit(n);
 		}
 	}
@@ -70,26 +73,41 @@ int main(int argc, char *argv[])
     pid_t child_pid, wpid;
     int status = 0;
     int i;
-
     time_t start_time;
     time(&start_time);
 
-    for(i = 1; i < argc; i++)
+    // system("clear");
+    printf("\nX PROTOKÓŁ\n");
+    printf("Oczekiwanie na zamknięcie wszystkich okien...\n");
+    printf("-----------------------------------------------------------------\n");
+
+    for (i = 1; i < argc; i++)
     {
         if ((child_pid = fork()) == 0)
         {
-            startNewWindow(i, argv[i]);
+            new_window(i, argv[i]);
             exit(0);
         }
     }
 
-	while ((wpid = wait(&status)) > 0)
-  {
-		int n = status >> 8;
-		time_t end_time;
-		time(&end_time);
-		double t = difftime(end_time, start_time);
-		printf("Okno graficzne (pid: %d) numer %d z %s zostalo zamkniete po %.f sekundach\n", (int)wpid, n, argv[n], t);
-	}
-	return 0;
+  	while ((wpid = wait(&status)) > 0)
+    {
+      int n = status >> 8;
+      time_t end_time;
+      time(&end_time);
+      double t = difftime(end_time, start_time);
+      char *czas;
+      if (t == 1)
+      {
+        czas = "sekundzie";
+      }
+      else
+      {
+        czas = "sekundach";
+      }
+      printf("[PID: %5d] Okno graficzne nr %2d (%s) zamknięto po %2.f %s.\n", (int)wpid, n, argv[n], t, czas);
+    }
+    printf("-----------------------------------------------------------------\n");
+    printf("Wszystkie okna zostały zamknięte.\n\n");
+    return 0;
 }
