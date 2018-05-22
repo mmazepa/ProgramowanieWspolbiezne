@@ -1,7 +1,11 @@
 #define _REENTRANT
-#include <pthread.h>
+#define _REENTRANT
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 #define dimRows 3
 #define dimCols 3
@@ -88,7 +92,7 @@ main()
   for (i = 0; i < threads; i++)
   {
     // pthread_join(*(tid+1), NULL);
-    int pthread_value = pthread_join(tid[i], (void *)&output[i]);
+    int pthread_value = pthread_join(tid[i], (void **)&output[i]);
     if (pthread_value == 0)
     {
       printf("[Wątek rodzicielski] Wysłałem %lu, odebrałem %d\n", i, (int)output[i]);
