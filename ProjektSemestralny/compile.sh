@@ -7,5 +7,6 @@ if [ ! -e $binDirectory ]; then
   mkdir $binDirectory
 fi
 
-gcc -o bin/mieszalnik mieszalnik.c
+gcc -o bin/klient klient.c #-Wall
+gcc -o bin/serwer serwer.c #-Wall
 echo "Done!"

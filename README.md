@@ -132,7 +132,3 @@ Repozytorium do przechowywania plików na potrzeby przedmiotu Programowanie Wsp�
     <td></td>
   </tr>
 </table>
-
-| Numer | Temat              | Deadline                      | Ocena |
-|-------|--------------------|-------------------------------|-------|
-| 6     | Mieszalnik kolorów | Ostatnie zajęcia (07.06.2018) |       |
