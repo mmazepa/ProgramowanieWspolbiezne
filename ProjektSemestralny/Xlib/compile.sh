@@ -7,5 +7,5 @@ if [ ! -e $binDirectory ]; then
   mkdir $binDirectory
 fi
 
-gcc -o bin/wyznacznik wyznacznik.c -lpthread
+gcc -o bin/xprotocol xprotocol.c -Wall -lX11
 echo "Done!"
