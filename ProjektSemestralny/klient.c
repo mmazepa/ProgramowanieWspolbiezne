@@ -1,44 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/msg.h>
-#include <sys/ipc.h>
-#include <string.h>
-#include <unistd.h>
+#include "funkcje.h"
 
 #define true 0
 #define false 1
-
-#define klucz1 2005
-#define klucz2 2608
-
-typedef struct {
-  long pID;
-  int red;
-  int green;
-  int blue;
-} Kolor;
-
-typedef struct
-{
-  long pID;
-  Kolor kolor_przed;
-  Kolor kolor_po;
-} Przed_i_po;
-
-void wyswietl_naglowek_klienta()
-{
-  printf(" _    _ _            _   \n");
-  printf("| | _| (_) ___ _ __ | |_ \n");
-  printf("| |/ / | |/ _ \\ '_ \\| __|\n");
-  printf("|   <| | |  __/ | | | |_ \n");
-  printf("|_|\\_\\_|_|\\___|_| |_|\\__|\n");
-}
-
-void fail(char *error_message)
-{
-  printf("[ERROR]: %s\n", error_message);
-  exit(1);
-}
 
 int isValidNumber(char *string)
 {
@@ -73,7 +36,7 @@ int main(int argc, char *argv[])
   input = msgget(klucz1, 0777);
   output = msgget(klucz2, 0777);
 
-  // wyswietl_naglowek_klienta();
+  // wyswietl_naglowek("klient");
   // printf("--------------------------------------------------\n");
 
   if(!argv[1] || !argv[2] || !argv[3] || argv[4])
@@ -105,12 +68,12 @@ int main(int argc, char *argv[])
   kolor.blue = kolor_blue;
   kolor.pID = getpid();
 
-  if(msgsnd(input, &kolor, sizeof(int)*100, 0) == -1)
+  if(msgsnd(input, &kolor, sizeof(Kolor)*10, 0) == -1)
   {
     fail("Wysyłanie koloru do serwera nie powiodło się!");
   }
 
-  // if(msgrcv(output, &przed_i_po, sizeof(int)*100, getpid(), 0) == -1)
+  // if(msgrcv(output, &przed_i_po, sizeof(Przed_i_po)*10, getpid(), 0) == -1)
   // {
   //   fail("Odbieranie koloru od serwera nie powiodło się!");
   // }
