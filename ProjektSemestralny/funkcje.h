@@ -1,10 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/msg.h>
-// #include <sys/ipc.h>
 #include <string.h>
-// #include <unistd.h>
-// #include <time.h>
 
 #define klucz1 2005
 #define klucz2 2608
