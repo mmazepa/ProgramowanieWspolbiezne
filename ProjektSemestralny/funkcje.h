@@ -13,13 +13,6 @@ typedef struct {
   int blue;
 } Kolor;
 
-typedef struct
-{
-  long pID;
-  Kolor kolor_przed;
-  Kolor kolor_po;
-} Przed_i_po;
-
 void wyswietl_naglowek(char *program)
 {
   if (strcmp(program, "serwer") == 0)

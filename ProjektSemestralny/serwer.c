@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
 {
   Kolor kolor_na_serwerze;
   Kolor kolor;
-  Przed_i_po przed_i_po;
 
   int input, output;
 
