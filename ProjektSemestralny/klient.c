@@ -36,7 +36,7 @@ XColor przygotuj_xcolor(int red, int green, int blue)
   return newColor;
 }
 
-int new_window(int n, char* host, Kolor kolor, int input, int output)
+int new_window(int n, char* host, Kolor kolor)
 {
 	Display *display;
 	Window window;
@@ -47,7 +47,7 @@ int new_window(int n, char* host, Kolor kolor, int input, int output)
 	int screen;
 	XEvent event;
   XColor xcolor;
-  Colormap colormap;
+  // Colormap colormap;
   // Status color;
   Drawable drawable;
 
@@ -55,7 +55,7 @@ int new_window(int n, char* host, Kolor kolor, int input, int output)
 	screen = DefaultScreen(display);
 	visual = DefaultVisual(display, screen);
 	depth = DefaultDepth(display, screen);
-  colormap = DefaultColormap(display, screen);
+  // colormap = DefaultColormap(display, screen);
 
   xcolor = przygotuj_xcolor(kolor.red, kolor.green, kolor.blue);
 
@@ -271,10 +271,6 @@ int main(int argc, char *argv[])
 
   int input, output;
 
-  int kolor_red = 0;
-  int kolor_green = 0;
-  int kolor_blue = 0;
-
   input = msgget(klucz1, 0777);
   output = msgget(klucz2, 0777);
 
@@ -296,7 +292,7 @@ int main(int argc, char *argv[])
   printf("[podany_kolor]:  RGB(%3d %3d %3d)\n", kolor.red, kolor.green, kolor.blue);
   printf("[kolor_serwera]: RGB(%3d %3d %3d)\n", kolor2.red, kolor2.green, kolor2.blue);
 
-  new_window(0, ":0", kolor2, input, output);
+  new_window(0, ":0", kolor2);
 
   return 0;
 }

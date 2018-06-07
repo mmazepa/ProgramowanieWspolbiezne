@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sys/msg.h>
 #include <string.h>
+#include <unistd.h>
 
 #define klucz1 2005
 #define klucz2 2608
