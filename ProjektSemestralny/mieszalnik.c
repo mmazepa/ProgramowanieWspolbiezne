@@ -1,4 +1,25 @@
-#include "funkcje.h"
+#include <X11/Xlib.h>
+#include <X11/X.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/msg.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+#define true 0
+#define false 1
+
+typedef struct {
+  long pID;
+  int red;
+  int green;
+  int blue;
+} Kolor;
 
 typedef struct {
   Display *display;
@@ -13,13 +34,93 @@ typedef struct {
   Drawable drawable;
 } XlibWindow;
 
-#define ARRAY_SIZE 100
-XlibWindow players[ARRAY_SIZE];
+#define SHMSZ 27
+Kolor kolor_na_serwerze = { .red = 0, .green = 0, .blue = 0 };
 
-void naglowek_serwera()
+void wyswietl_naglowek()
+{
+  printf("           _                    _       _ _    \n");
+  printf(" _ __ ___ (_) ___  ___ ______ _| |_ __ (_) | __\n");
+  printf("| '_ ` _ \\| |/ _ \\/ __|_  / _` | | '_ \\| | |/ /\n");
+  printf("| | | | | | |  __/\\__ \\/ / (_| | | | | | |   < \n");
+  printf("|_| |_| |_|_|\\___||___/___\\__,_|_|_| |_|_|_|\\_\\\n");
+}
+
+void fail(char *error_message)
+{
+  printf("[ERROR]: %s\n", error_message);
+  exit(1);
+}
+
+int isValidNumber(char *string)
+{
+  int i;
+  for (i = 0; i < strlen(string); i++)
+  {
+    if (string[i] < 48 || string[i] > 57)
+    return false;
+  }
+  return true;
+}
+
+int areNumbersValid(char *str1, char *str2, char *str3)
+{
+  if (isValidNumber(str1) == false) return false;
+  if (isValidNumber(str2) == false) return false;
+  if (isValidNumber(str3) == false) return false;
+  return true;
+}
+
+XColor przygotuj_xcolor(int red, int green, int blue)
+{
+  XColor newColor;
+  newColor.red = (red * 65535)/257;
+  newColor.green = (green * 65535)/257;
+  newColor.blue = (blue * 65535)/257;
+  return newColor;
+}
+
+Kolor przygotuj_kolor(char *argv[])
+{
+  int kolor_red, kolor_green, kolor_blue;
+  Kolor kolor;
+
+  if(!argv[1] || !argv[2] || !argv[3] || argv[4])
+  {
+    fail("Niepoprawna ilość argumentów, powinny być dokładnie 3!");
+  }
+
+  if (areNumbersValid(argv[1], argv[2], argv[3]) != 0)
+  {
+    fail("Argumenty powinny być liczbami naturalnymi!");
+  }
+
+  kolor_red = atoi(argv[1]);
+  kolor_green = atoi(argv[2]);
+  kolor_blue = atoi(argv[3]);
+
+  if (kolor_red < 0 || kolor_green < 0 || kolor_blue < 0)
+  {
+    fail("Argumenty powinny być większe lub równe 0!");
+  }
+
+  if (kolor_red > 255 || kolor_green > 255 || kolor_blue > 255)
+  {
+    fail("Argumenty powinny być mniejsze lub równe 255!");
+  }
+
+  kolor.red = kolor_red;
+  kolor.green = kolor_green;
+  kolor.blue = kolor_blue;
+  kolor.pID = getpid();
+
+  return kolor;
+}
+
+void naglowek()
 {
   system("clear");
-  wyswietl_naglowek("serwer");
+  wyswietl_naglowek();
   printf("Praca serwera w toku, oczekiwanie na zgłoszenia...\n");
   printf("-----------------------------------------------------\n");
 }
@@ -37,7 +138,7 @@ int miks(int serwer_kolor, int klient_kolor)
   return mieszany_kolor;
 }
 
-Kolor zmieszaj(int wartosc_red, int wartosc_green, int wartosc_blue, Kolor kolor_na_serwerze)
+Kolor zmieszaj(int wartosc_red, int wartosc_green, int wartosc_blue)
 {
   Kolor kolor;
 
@@ -48,41 +149,14 @@ Kolor zmieszaj(int wartosc_red, int wartosc_green, int wartosc_blue, Kolor kolor
   return kolor;
 }
 
-void updateDisplays()
+int new_window(int n, char* host, Kolor kolor, char* s)
 {
-  // int i;
-  // for (i = 1; i <= 3; i++)
-  // {
-  //   // XDrawString(players[i].display, players[i].drawable, players[i].gc, 110, 80, "HEJKA!", sizeof(char)*32);
-  //   printf("[%d_%d]: connCheck!\n", getpid(), i);
-  // }
-  // XDrawString(players[0].display, players[0].drawable, players[0].gc, 110, 80, "HEJKA!", sizeof(char)*32);
-  // printf("[size: %ld]\n", sizeof(players));
-}
-
-int new_window(int n, char* host, Kolor kolor)
-{
-	// Display *display;
-	// Window window;
-	// XSetWindowAttributes window_attributes;
-	// GC gc;
-	// Visual *visual;
-	// int depth;
-	// int screen;
-	// XEvent event;
-  // XColor xcolor;
-  // // Colormap colormap;
-  // // Status color;
-  // Drawable drawable;
-
   XlibWindow xlibwindow;
 
 	xlibwindow.display = XOpenDisplay(host);
-
 	xlibwindow.screen = DefaultScreen(xlibwindow.display);
 	xlibwindow.visual = DefaultVisual(xlibwindow.display, xlibwindow.screen);
 	xlibwindow.depth = DefaultDepth(xlibwindow.display, xlibwindow.screen);
-  // colormap = DefaultColormap(display, screen);
 
   xlibwindow.xcolor = przygotuj_xcolor(kolor.red, kolor.green, kolor.blue);
 
@@ -108,12 +182,45 @@ int new_window(int n, char* host, Kolor kolor)
   XColor czarny = przygotuj_xcolor(0, 0, 0);
   XAllocColor(xlibwindow.display, DefaultColormap(xlibwindow.display, 0), &czarny);
 
-  players[n] = xlibwindow;
-  // printf("%d...\n", n);
-
 	while (1)
   {
-  	// XWarpPointer(display, window, window, 0, 0, 0, 0, 10, 10);
+    // xlibwindow.drawable = xlibwindow.window;
+    // char *tekscik = malloc(sizeof(char)*32);
+    // sprintf(tekscik, "Aktualny kolor: RGB(%3d %3d %3d)", xlibwindow.xcolor.red, xlibwindow.xcolor.green, xlibwindow.xcolor.blue);
+    // Font font = XLoadFont(xlibwindow.display, "-*-fixed-*-*-*-18-*-*-*-*-*-*-*");
+    // XSetFont(xlibwindow.display, xlibwindow.gc, font);
+    // XDrawString(xlibwindow.display, xlibwindow.drawable, xlibwindow.gc, 110, 30, tekscik, sizeof(char)*32);
+
+    char getRed[3], getGreen[3], getBlue[3];
+    int counter = 0;
+
+    for(counter = 4; counter <= 6; counter++) getRed[counter-4] = s[counter];
+    for(counter = 8; counter <= 11; counter++) getGreen[counter-8] = s[counter];
+    for(counter = 12; counter <= 14; counter++) getBlue[counter-12] = s[counter];
+
+    int numRed, numGreen, numBlue;
+    numRed = atoi(getRed);
+    numGreen = atoi(getGreen);
+    numBlue = atoi(getBlue);
+
+    printf("RGB(%3d %3d %3d)\n", numRed, numGreen, numBlue);
+
+    kolor.red = numRed;
+    kolor.green = numGreen;
+    kolor.blue = numBlue;
+
+    kolor_na_serwerze = kolor;
+
+    xlibwindow.xcolor = przygotuj_xcolor(kolor.red, kolor.green, kolor.blue);
+
+    // if (kolor_na_serwerze.red != kolor.red
+    //   || kolor_na_serwerze.green != kolor.green
+    //   || kolor_na_serwerze.blue != kolor.blue)
+    // {
+    //   printf("===> inny!\n");
+    // }
+    // else printf("===> taki sam!\n");
+
 		XNextEvent(xlibwindow.display, &xlibwindow.event);
 		switch (xlibwindow.event.type)
     {
@@ -153,14 +260,25 @@ int new_window(int n, char* host, Kolor kolor)
         XSetForeground(xlibwindow.display, xlibwindow.gc, czarny.pixel);
         XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 288, 85, 30, 5);
 
-        // XEvent event;
-        // XQueryPointer(display, RootWindow(display, DefaultScreen(display)), &event.xbutton.root, &event.xbutton.window, &event.xbutton.x_root, &event.xbutton.y_root, &event.xbutton.x, &event.xbutton.y, &event.xbutton.state);
-        // printf("mouse[%d,%d]\n", event.xbutton.x, event.xbutton.y);
-
 				XFlush(xlibwindow.display);
 				break;
 			case KeyPress:
       {
+        for(counter = 4; counter <= 6; counter++) getRed[counter-4] = s[counter];
+        for(counter = 8; counter <= 11; counter++) getGreen[counter-8] = s[counter];
+        for(counter = 12; counter <= 14; counter++) getBlue[counter-12] = s[counter];
+
+        int numRed, numGreen, numBlue;
+        numRed = atoi(getRed);
+        numGreen = atoi(getGreen);
+        numBlue = atoi(getBlue);
+
+        kolor.red = numRed;
+        kolor.green = numGreen;
+        kolor.blue = numBlue;
+
+        xlibwindow.xcolor = przygotuj_xcolor(kolor.red, kolor.green, kolor.blue);
+
         char my_key;
         if (!my_key)
         {
@@ -276,16 +394,15 @@ int new_window(int n, char* host, Kolor kolor)
         kolor.red = abs(kolor.red%256);
         kolor.green = abs(kolor.green%256);
         kolor.blue = abs(kolor.blue%256);
+
         // --- TMP ---------------------------------------
         sprintf(colorText, "Aktualny kolor: RGB(%3d %3d %3d)", kolor.red, kolor.green, kolor.blue);
+        sprintf(s, "RGB(%3d %3d %3d)", kolor.red, kolor.green, kolor.blue);
+
         XSetForeground(xlibwindow.display, xlibwindow.gc, bialy.pixel);
         XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 100, 10, 300, 90);
         XSetForeground(xlibwindow.display, xlibwindow.gc, czarny.pixel);
-        // int i;
-        // for (i = 1; i <= sizeof(players); i++)
-        // {
-        //   XDrawString(players[i].display, players[i].drawable, players[i].gc, 110, 80, colorText, sizeof(char)*32);
-        // }
+
         XDrawString(xlibwindow.display, xlibwindow.drawable, xlibwindow.gc, 110, 80, colorText, sizeof(char)*32);
         // --- TMP ---------------------------------------
         xlibwindow.xcolor = przygotuj_xcolor(kolor.red, kolor.green, kolor.blue);
@@ -317,50 +434,38 @@ int new_window(int n, char* host, Kolor kolor)
         // printf("released...\n");
         break;
 		}
-    updateDisplays();
 	}
 }
 
 int main(int argc, char *argv[])
 {
-  Kolor kolor_na_serwerze;
   // Kolor kolor;
 
-  int input, output;
+  // char c;
+  int shmid;
+  key_t key;
+  char *shm, *s;
 
-  kolor_na_serwerze.red = 0;
-  kolor_na_serwerze.green = 0;
-  kolor_na_serwerze.blue = 0;
-  kolor_na_serwerze.pID = getpid();
+  key = 5678;
 
-  naglowek_serwera();
+  if ((shmid = shmget(key, SHMSZ, IPC_CREAT | 0666)) < 0) {
+      perror("shmget");
+      // exit(1);
+      return 1;
+  }
+
+  if ((shm = shmat(shmid, NULL, 0)) == (char *) -1) {
+      perror("shmat");
+      // exit(1);
+      return 1;
+  }
+
+  s = shm;
+
+  // sprintf(s, "RGB(%3d %3d %3d)", kolor_na_serwerze.red, kolor_na_serwerze.green, kolor_na_serwerze.blue);
+
+  naglowek();
   if (argc <= 1) fail("Podaj co najmniej jeden 'adres_ip:ekran'.");
-
-  input = msgget(klucz1, 0777 | IPC_CREAT);
-  output = msgget(klucz2, 0777 | IPC_CREAT);
-
-  // int licznik = 1;
-  //
-  // while(1)
-  // {
-  //   // if(msgrcv(input, &kolor, sizeof(Kolor)*10, 0, 0) == -1)
-  //   // {
-  //   //   fail("Odbiór koloru od klienta nie powiódł się!");
-  //   // }
-  //
-  //   // new_window(0, ":0", kolor_na_serwerze);
-  //
-  //   printf("[%d]: mix RGB(%3d %3d %3d) & RGB(%3d %3d %3d) -> ", licznik, kolor_na_serwerze.red, kolor_na_serwerze.green, kolor_na_serwerze.blue, kolor.red, kolor.green, kolor.blue);
-  //   kolor_na_serwerze = zmieszaj(kolor.red, kolor.green, kolor.blue, kolor_na_serwerze);
-  //   printf("RGB(%3d %3d %3d) [%ld]\n", kolor_na_serwerze.red, kolor_na_serwerze.green, kolor_na_serwerze.blue, kolor.pID);
-  //
-  //   // if(msgsnd(output, &kolor_na_serwerze, sizeof(Kolor)*10, 0) == -1)
-  //   // {
-  //   //    fail("[ERROR]: Wysyłanie koloru do klienta nie powiodło się!");
-  //   // }
-  //
-  //   licznik++;
-  //  }
 
   // TMP TMP TMP --------------------------
   pid_t child_pid, wpid;
@@ -376,7 +481,7 @@ int main(int argc, char *argv[])
   {
       if ((child_pid = fork()) == 0)
       {
-          new_window(i, argv[i], kolor_na_serwerze);
+          new_window(i, argv[i], kolor_na_serwerze, s);
           exit(0);
       }
   }
@@ -398,9 +503,6 @@ int main(int argc, char *argv[])
   printf("------------------------------------------------------------------------------\n");
   printf("Wszystkie okna zostały zamknięte.\n\n");
   // TMP TMP TMP --------------------------
-
-  msgctl(input, IPC_RMID, 0);
-  msgctl(output, IPC_RMID, 0);
 
   return 0;
 }
