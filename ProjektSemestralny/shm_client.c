@@ -28,7 +28,7 @@ main()
         return 1;
     }
 
-    for (s = shm; *s != NULL; s++)
+    for (s = shm; *s; s++)
         putchar(*s);
     putchar('\n');
 

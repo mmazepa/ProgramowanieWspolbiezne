@@ -52,25 +52,6 @@ void fail(char *error_message)
   exit(1);
 }
 
-int isValidNumber(char *string)
-{
-  int i;
-  for (i = 0; i < strlen(string); i++)
-  {
-    if (string[i] < 48 || string[i] > 57)
-    return false;
-  }
-  return true;
-}
-
-int areNumbersValid(char *str1, char *str2, char *str3)
-{
-  if (isValidNumber(str1) == false) return false;
-  if (isValidNumber(str2) == false) return false;
-  if (isValidNumber(str3) == false) return false;
-  return true;
-}
-
 XColor przygotuj_xcolor(int red, int green, int blue)
 {
   XColor newColor;
@@ -78,43 +59,6 @@ XColor przygotuj_xcolor(int red, int green, int blue)
   newColor.green = (green * 65535)/257;
   newColor.blue = (blue * 65535)/257;
   return newColor;
-}
-
-Kolor przygotuj_kolor(char *argv[])
-{
-  int kolor_red, kolor_green, kolor_blue;
-  Kolor kolor;
-
-  if(!argv[1] || !argv[2] || !argv[3] || argv[4])
-  {
-    fail("Niepoprawna ilość argumentów, powinny być dokładnie 3!");
-  }
-
-  if (areNumbersValid(argv[1], argv[2], argv[3]) != 0)
-  {
-    fail("Argumenty powinny być liczbami naturalnymi!");
-  }
-
-  kolor_red = atoi(argv[1]);
-  kolor_green = atoi(argv[2]);
-  kolor_blue = atoi(argv[3]);
-
-  if (kolor_red < 0 || kolor_green < 0 || kolor_blue < 0)
-  {
-    fail("Argumenty powinny być większe lub równe 0!");
-  }
-
-  if (kolor_red > 255 || kolor_green > 255 || kolor_blue > 255)
-  {
-    fail("Argumenty powinny być mniejsze lub równe 255!");
-  }
-
-  kolor.red = kolor_red;
-  kolor.green = kolor_green;
-  kolor.blue = kolor_blue;
-  kolor.pID = getpid();
-
-  return kolor;
 }
 
 void naglowek()
@@ -125,12 +69,12 @@ void naglowek()
   printf("-----------------------------------------------------\n");
 }
 
-int miks(int serwer_kolor, int klient_kolor)
+int miks(int kolor1_rgb, int kolo2_rgb)
 {
   int mieszany_kolor;
-  mieszany_kolor = (serwer_kolor + klient_kolor)/2;
+  mieszany_kolor = (kolor1_rgb + kolo2_rgb)/2;
 
-  if (serwer_kolor + 1 == klient_kolor)
+  if (kolor1_rgb + 1 == kolo2_rgb)
   {
     mieszany_kolor = mieszany_kolor + 1;
   }
@@ -138,13 +82,13 @@ int miks(int serwer_kolor, int klient_kolor)
   return mieszany_kolor;
 }
 
-Kolor zmieszaj(int wartosc_red, int wartosc_green, int wartosc_blue)
+Kolor zmieszaj(Kolor kolor1, Kolor kolor2)
 {
   Kolor kolor;
 
-  kolor.red = miks(kolor_na_serwerze.red, wartosc_red);
-  kolor.green = miks(kolor_na_serwerze.green, wartosc_green);
-  kolor.blue = miks(kolor_na_serwerze.blue, wartosc_blue);
+  kolor.red = miks(kolor1.red, kolor2.red);
+  kolor.green = miks(kolor1.green, kolor2.green);
+  kolor.blue = miks(kolor1.blue, kolor2.blue);
 
   return kolor;
 }
@@ -184,13 +128,6 @@ int new_window(int n, char* host, Kolor kolor, char* s)
 
 	while (1)
   {
-    // xlibwindow.drawable = xlibwindow.window;
-    // char *tekscik = malloc(sizeof(char)*32);
-    // sprintf(tekscik, "Aktualny kolor: RGB(%3d %3d %3d)", xlibwindow.xcolor.red, xlibwindow.xcolor.green, xlibwindow.xcolor.blue);
-    // Font font = XLoadFont(xlibwindow.display, "-*-fixed-*-*-*-18-*-*-*-*-*-*-*");
-    // XSetFont(xlibwindow.display, xlibwindow.gc, font);
-    // XDrawString(xlibwindow.display, xlibwindow.drawable, xlibwindow.gc, 110, 30, tekscik, sizeof(char)*32);
-
     char getRed[3], getGreen[3], getBlue[3];
     int counter = 0;
 
@@ -212,14 +149,6 @@ int new_window(int n, char* host, Kolor kolor, char* s)
     kolor_na_serwerze = kolor;
 
     xlibwindow.xcolor = przygotuj_xcolor(kolor.red, kolor.green, kolor.blue);
-
-    // if (kolor_na_serwerze.red != kolor.red
-    //   || kolor_na_serwerze.green != kolor.green
-    //   || kolor_na_serwerze.blue != kolor.blue)
-    // {
-    //   printf("===> inny!\n");
-    // }
-    // else printf("===> taki sam!\n");
 
 		XNextEvent(xlibwindow.display, &xlibwindow.event);
 		switch (xlibwindow.event.type)
@@ -284,36 +213,29 @@ int new_window(int n, char* host, Kolor kolor, char* s)
         {
           my_key = 'r';
         }
+
         // printf("%ld\n", (long) XLookupKeysym (&event.xkey, 0));
+        Kolor tmpKolor = { .red = 0, .green = 0, .blue = 0 };
         if ((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 114)  // R-key was pressed
         {
-          // printf("[RED]:   RGB(255,0,0)\n");
+          // RGB(255,0,0)
           my_key = 'r';
-          // --- TMP ---------------------------------------
-          kolor.red = (kolor.red+255)/2;
-          kolor.green = kolor.green/2;
-          kolor.blue = kolor.blue/2;
-          // --- TMP ---------------------------------------
+          tmpKolor.red = 255;
+          kolor = zmieszaj(kolor, tmpKolor);
         }
         else if ((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 103) // G-key was pressed
         {
-          // printf("[GREEN]: RGB(0,255,0)\n");
+          // RGB(0,255,0)
           my_key = 'g';
-          // --- TMP ---------------------------------------
-          kolor.red = kolor.red/2;
-          kolor.green = (kolor.green+255)/2;
-          kolor.blue = kolor.blue/2;
-          // --- TMP ---------------------------------------
+          tmpKolor.green = 255;
+          kolor = zmieszaj(kolor, tmpKolor);
         }
         else if ((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 98) // B-key was pressed
         {
-          // printf("[BLUE]:  RGB(0,0,255)\n");
+          // RGB(0,0,255)
           my_key = 'b';
-          // --- TMP ---------------------------------------
-          kolor.red = kolor.red/2;
-          kolor.green = kolor.green/2;
-          kolor.blue = (kolor.blue+255)/2;
-          // --- TMP ---------------------------------------
+          tmpKolor.blue = 255;
+          kolor = zmieszaj(kolor, tmpKolor);
         }
         else if((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65361) // Arrow-Left was pressed
         {
@@ -347,8 +269,6 @@ int new_window(int n, char* host, Kolor kolor, char* s)
         }
         else if((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65362) // Arrow-Up was pressed
         {
-          // printf("arrow up!\n");
-          // --- TMP ---------------------------------------
           switch (my_key)
           {
             case 'r':
@@ -361,12 +281,9 @@ int new_window(int n, char* host, Kolor kolor, char* s)
               kolor.blue++;
               break;
           }
-          // --- TMP ---------------------------------------
         }
         else if((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65364) // Arrow-Down was pressed
         {
-          // printf("arrow down!\n");
-          // --- TMP ---------------------------------------
           switch (my_key)
           {
             case 'r':
@@ -382,7 +299,6 @@ int new_window(int n, char* host, Kolor kolor, char* s)
               if (kolor.blue == -1) kolor.blue = 255;
               break;
           }
-          // --- TMP ---------------------------------------
         }
         else if((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65293
           || (long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65307) // Enter or ESC was pressed
@@ -395,7 +311,6 @@ int new_window(int n, char* host, Kolor kolor, char* s)
         kolor.green = abs(kolor.green%256);
         kolor.blue = abs(kolor.blue%256);
 
-        // --- TMP ---------------------------------------
         sprintf(colorText, "Aktualny kolor: RGB(%3d %3d %3d)", kolor.red, kolor.green, kolor.blue);
         sprintf(s, "RGB(%3d %3d %3d)", kolor.red, kolor.green, kolor.blue);
 
@@ -404,7 +319,7 @@ int new_window(int n, char* host, Kolor kolor, char* s)
         XSetForeground(xlibwindow.display, xlibwindow.gc, czarny.pixel);
 
         XDrawString(xlibwindow.display, xlibwindow.drawable, xlibwindow.gc, 110, 80, colorText, sizeof(char)*32);
-        // --- TMP ---------------------------------------
+
         xlibwindow.xcolor = przygotuj_xcolor(kolor.red, kolor.green, kolor.blue);
         XAllocColor(xlibwindow.display, DefaultColormap(xlibwindow.display, 0), &xlibwindow.xcolor);
         XSetForeground(xlibwindow.display, xlibwindow.gc, xlibwindow.xcolor.pixel);
@@ -427,21 +342,14 @@ int new_window(int n, char* host, Kolor kolor, char* s)
         {
           XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 360, 85, 30, 5);
         }
-        // --- TMP ---------------------------------------
         break;
       }
-			case KeyRelease:
-        // printf("released...\n");
-        break;
 		}
 	}
 }
 
 int main(int argc, char *argv[])
 {
-  // Kolor kolor;
-
-  // char c;
   int shmid;
   key_t key;
   char *shm, *s;
@@ -450,24 +358,19 @@ int main(int argc, char *argv[])
 
   if ((shmid = shmget(key, SHMSZ, IPC_CREAT | 0666)) < 0) {
       perror("shmget");
-      // exit(1);
-      return 1;
+      fail("shmget");
   }
 
   if ((shm = shmat(shmid, NULL, 0)) == (char *) -1) {
       perror("shmat");
-      // exit(1);
-      return 1;
+      fail("shmat");
   }
 
   s = shm;
 
-  // sprintf(s, "RGB(%3d %3d %3d)", kolor_na_serwerze.red, kolor_na_serwerze.green, kolor_na_serwerze.blue);
-
   naglowek();
   if (argc <= 1) fail("Podaj co najmniej jeden 'adres_ip:ekran'.");
 
-  // TMP TMP TMP --------------------------
   pid_t child_pid, wpid;
   int status = 0;
   int i;
@@ -502,7 +405,6 @@ int main(int argc, char *argv[])
 
   printf("------------------------------------------------------------------------------\n");
   printf("Wszystkie okna zostały zamknięte.\n\n");
-  // TMP TMP TMP --------------------------
 
   return 0;
 }
