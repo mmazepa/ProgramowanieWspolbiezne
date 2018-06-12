@@ -35,7 +35,7 @@ typedef struct {
 } XlibWindow;
 
 #define SHMSZ 27
-Kolor kolor_na_serwerze = { .red = 0, .green = 0, .blue = 0 };
+Kolor kolor_w_pamieci = { .red = 0, .green = 0, .blue = 0 };
 
 void wyswietl_naglowek()
 {
@@ -65,8 +65,8 @@ void naglowek()
 {
   system("clear");
   wyswietl_naglowek();
-  printf("Praca serwera w toku, oczekiwanie na zgłoszenia...\n");
-  printf("-----------------------------------------------------\n");
+  printf("Praca mieszalnika w toku, oczekiwanie na zgłoszenia...\n");
+  printf("------------------------------------------------------\n");
 }
 
 int miks(int kolor1_rgb, int kolo2_rgb)
@@ -93,7 +93,56 @@ Kolor zmieszaj(Kolor kolor1, Kolor kolor2)
   return kolor;
 }
 
-int new_window(int n, char* host, Kolor kolor, char* s)
+Kolor stworz_kolor(int red, int green, int blue)
+{
+  Kolor kolor;
+
+  kolor.red = red;
+  kolor.green = green;
+  kolor.blue = blue;
+
+  return kolor;
+}
+
+char podmien_skladowa(char *kierunek, char aktualna_skladowa)
+{
+  if (strcmp(kierunek, "lewo"))
+  {
+    if (aktualna_skladowa == 'r') aktualna_skladowa = 'g';
+    else if (aktualna_skladowa == 'g') aktualna_skladowa = 'b';
+    else if (aktualna_skladowa == 'b') aktualna_skladowa = 'r';
+  }
+  else if (strcmp(kierunek, "prawo"))
+  {
+    if (aktualna_skladowa == 'r') aktualna_skladowa = 'b';
+    else if (aktualna_skladowa == 'g') aktualna_skladowa = 'r';
+    else if (aktualna_skladowa == 'b') aktualna_skladowa = 'g';
+  }
+  return aktualna_skladowa;
+}
+
+Kolor zmien_wartosc(char *kierunek, char aktualna_skladowa, Kolor aktualny_kolor)
+{
+  if (strcmp(kierunek, "góra"))
+  {
+    if (aktualna_skladowa == 'r') aktualny_kolor.red++;
+    else if (aktualna_skladowa == 'g') aktualny_kolor.green++;
+    else if (aktualna_skladowa == 'b') aktualny_kolor.blue++;
+  }
+  else if (strcmp(kierunek, "dół"))
+  {
+    if (aktualna_skladowa == 'r') aktualny_kolor.red--;
+    else if (aktualna_skladowa == 'g') aktualny_kolor.green--;
+    else if (aktualna_skladowa == 'b') aktualny_kolor.blue--;
+
+    if (aktualny_kolor.red == -1) aktualny_kolor.red = 255;
+    if (aktualny_kolor.green == -1) aktualny_kolor.green = 255;
+    if (aktualny_kolor.blue == -1) aktualny_kolor.blue = 255;
+  }
+  return aktualny_kolor;
+}
+
+int nowe_okno(int n, char* host, Kolor kolor, char* s)
 {
   XlibWindow xlibwindow;
 
@@ -142,11 +191,9 @@ int new_window(int n, char* host, Kolor kolor, char* s)
 
     printf("RGB(%3d %3d %3d)\n", numRed, numGreen, numBlue);
 
-    kolor.red = numRed;
-    kolor.green = numGreen;
-    kolor.blue = numBlue;
+    kolor = stworz_kolor(numRed, numGreen, numBlue);
 
-    kolor_na_serwerze = kolor;
+    kolor_w_pamieci = kolor;
 
     xlibwindow.xcolor = przygotuj_xcolor(kolor.red, kolor.green, kolor.blue);
 
@@ -202,9 +249,7 @@ int new_window(int n, char* host, Kolor kolor, char* s)
         numGreen = atoi(getGreen);
         numBlue = atoi(getBlue);
 
-        kolor.red = numRed;
-        kolor.green = numGreen;
-        kolor.blue = numBlue;
+        kolor = stworz_kolor(numRed, numGreen, numBlue);
 
         xlibwindow.xcolor = przygotuj_xcolor(kolor.red, kolor.green, kolor.blue);
 
@@ -215,7 +260,7 @@ int new_window(int n, char* host, Kolor kolor, char* s)
         }
 
         // printf("%ld\n", (long) XLookupKeysym (&event.xkey, 0));
-        Kolor tmpKolor = { .red = 0, .green = 0, .blue = 0 };
+        Kolor tmpKolor = stworz_kolor(0, 0, 0);
         if ((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 114)  // R-key was pressed
         {
           // RGB(255,0,0)
@@ -237,79 +282,30 @@ int new_window(int n, char* host, Kolor kolor, char* s)
           tmpKolor.blue = 255;
           kolor = zmieszaj(kolor, tmpKolor);
         }
-        else if((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65361) // Arrow-Left was pressed
+        else if ((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65361) // Arrow-Left was pressed
         {
-          switch (my_key)
-          {
-            case 'r':
-              my_key = 'b';
-              break;
-            case 'g':
-              my_key = 'r';
-              break;
-            case 'b':
-              my_key = 'g';
-              break;
-          }
+          my_key = podmien_skladowa("lewo", my_key);
         }
-        else if((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65363) // Arrow-Right was pressed
+        else if ((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65363) // Arrow-Right was pressed
         {
-          switch (my_key)
-          {
-            case 'r':
-              my_key = 'g';
-              break;
-            case 'g':
-              my_key = 'b';
-              break;
-            case 'b':
-              my_key = 'r';
-              break;
-          }
+          my_key = podmien_skladowa("prawo", my_key);
         }
-        else if((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65362) // Arrow-Up was pressed
+        else if ((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65362) // Arrow-Up was pressed
         {
-          switch (my_key)
-          {
-            case 'r':
-              kolor.red++;
-              break;
-            case 'g':
-              kolor.green++;
-              break;
-            case 'b':
-              kolor.blue++;
-              break;
-          }
+          kolor = zmien_wartosc("dół", my_key, kolor);
         }
-        else if((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65364) // Arrow-Down was pressed
+        else if ((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65364) // Arrow-Down was pressed
         {
-          switch (my_key)
-          {
-            case 'r':
-              kolor.red--;
-              if (kolor.red == -1) kolor.red = 255;
-              break;
-            case 'g':
-              kolor.green--;
-              if (kolor.green == -1) kolor.green = 255;
-              break;
-            case 'b':
-              kolor.blue--;
-              if (kolor.blue == -1) kolor.blue = 255;
-              break;
-          }
+          kolor = zmien_wartosc("góra", my_key, kolor);
         }
-        else if((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65293
+        else if ((long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65293
           || (long) XLookupKeysym (&xlibwindow.event.xkey, 0) == 65307) // Enter or ESC was pressed
         {
           XCloseDisplay(xlibwindow.display);
           exit(n);
         }
 
-        kolor.red = abs(kolor.red%256);
-        kolor.green = abs(kolor.green%256);
-        kolor.blue = abs(kolor.blue%256);
+        kolor = stworz_kolor(abs(kolor.red%256), abs(kolor.green%256), abs(kolor.blue%256));
 
         sprintf(colorText, "Aktualny kolor: RGB(%3d %3d %3d)", kolor.red, kolor.green, kolor.blue);
         sprintf(s, "RGB(%3d %3d %3d)", kolor.red, kolor.green, kolor.blue);
@@ -329,19 +325,11 @@ int new_window(int n, char* host, Kolor kolor, char* s)
         XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 400, 400, 90, 90);
         XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 400, 10, 90, 90);
 
+        // podmiana podkreślenia
         XSetForeground(xlibwindow.display, xlibwindow.gc, czarny.pixel);
-        if(my_key == 'r')
-        {
-          XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 288, 85, 30, 5);
-        }
-        else if(my_key == 'g')
-        {
-          XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 325, 85, 30, 5);
-        }
-        else if(my_key == 'b')
-        {
-          XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 360, 85, 30, 5);
-        }
+        if (my_key == 'r') XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 288, 85, 30, 5);
+        else if (my_key == 'g') XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 325, 85, 30, 5);
+        else if (my_key == 'b') XFillRectangle(xlibwindow.display, xlibwindow.window, xlibwindow.gc, 360, 85, 30, 5);
         break;
       }
 		}
@@ -384,7 +372,7 @@ int main(int argc, char *argv[])
   {
       if ((child_pid = fork()) == 0)
       {
-          new_window(i, argv[i], kolor_na_serwerze, s);
+          nowe_okno(i, argv[i], kolor_w_pamieci, s);
           exit(0);
       }
   }
